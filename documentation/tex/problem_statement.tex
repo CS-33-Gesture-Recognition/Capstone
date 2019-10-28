@@ -1,0 +1,132 @@
+\documentclass[onecolumn, draftclsnofoot,10pt, compsoc]{IEEEtran}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage{setspace}
+
+\usepackage{geometry}
+\geometry{textheight=9.5in, textwidth=7in}
+
+% 1. Fill in these details
+\def \CapstoneTeamName{		Gesture Recognition}
+\def \CapstoneTeamNumber{		33}
+\def \GroupMemberOne{			Jonathan Hull}
+\def \GroupMemberTwo{			Nicholas Davies}
+\def \GroupMemberThree{			Shane Clancy}
+\def \GroupMemberFour{          Shihao Song}
+\def \GroupMemberFive{          Ulises Zaragoza}
+\def \GroupMemberSix{           Zhidong Zhang}
+\def \CapstoneProjectName{		Gesture Recognition using new Intel Real Sense light coded Camera}
+\def \CapstoneSponsorCompany{ Intel}
+\def \CapstoneSponsorPersonOne{		Eduardo X. Alban}
+\def \CapstoneSponsorPersonTwo{        Satoshi Suzuki}
+\def \CapstoneSponsorPersonThree{        Po-Cheng Chen}
+
+% 2. Uncomment the appropriate line below so that the document type works
+\def \DocType{	Problem Statement
+				%Requirements Document
+				%Technology Review
+				%Design Document
+				%Progress Report
+				}
+			
+\newcommand{\NameSigPair}[1]{\par
+\makebox[2.75in][r]{#1} \hfil 	\makebox[3.25in]{\makebox[2.25in]{\hrulefill} \hfill		\makebox[.75in]{\hrulefill}}
+\par\vspace{-12pt} \textit{\tiny\noindent
+\makebox[2.75in]{} \hfil		\makebox[3.25in]{\makebox[2.25in][r]{Signature} \hfill	\makebox[.75in][r]{Date}}}}
+% 3. If the document is not to be signed, uncomment the RENEWcommand below
+%\renewcommand{\NameSigPair}[1]{#1}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\begin{titlepage}
+    \pagenumbering{gobble}
+    \begin{singlespace}
+    	%\includegraphics[height=4cm]{coe_v_spot1}
+        \hfill 
+        % 4. If you have a logo, use this includegraphics command to put it on the coversheet.
+        %\includegraphics[height=4cm]{CompanyLogo}   
+        \par\vspace{.2in}
+        \centering
+        \scshape{
+            \huge CS Capstone \DocType \par
+            {\large\today}\par
+            \vspace{.5in}
+            \textbf{\Huge\CapstoneProjectName}\par
+            \vfill
+            {\large Prepared for}\par
+            \Huge \CapstoneSponsorCompany\par
+            \vspace{5pt}
+            {\Large\NameSigPair{\CapstoneSponsorPersonOne}\par}
+            {\Large\NameSigPair{\CapstoneSponsorPersonTwo}\par}
+            {\Large\NameSigPair{\CapstoneSponsorPersonThree}\par}
+            {\large Prepared by }\par
+            Group\CapstoneTeamNumber\par
+            % 5. comment out the line below this one if you do not wish to name your team
+            \CapstoneTeamName\par 
+            \vspace{5pt}
+            {\Large
+                \NameSigPair{\GroupMemberOne}\par
+                \NameSigPair{\GroupMemberTwo}\par
+                \NameSigPair{\GroupMemberThree}\par
+                \NameSigPair{\GroupMemberFour}\par
+                \NameSigPair{\GroupMemberFive}\par
+                \NameSigPair{\GroupMemberSix}\par
+            }
+            \vspace{20pt}
+        }
+        \begin{abstract}
+        % 6. Fill in your abstract    
+        	 A high level summary of our project looks at utilizing the RealSense cameras offered by Intel to automatically recognize human gestures and produce translations of these gestures into their readable text representations. The steps needed to accomplish this task will include building a database of gesture videos for which to train a Machine Learning (ML) algorithm to correctly identify different gestures seen from camera video feeds. The classifications made will be presented to users via a Graphical User Interface (GUI). Our team reached out to our involved clients to work out details about what a realistic end goal might look like, however we have yet to finalize meeting times to further detail these project specifications. Therefore, our team has laid out potential performance metrics for our client representing what we have in mind based on our predefined knowledge of our selected project.
+        \end{abstract}     
+    \end{singlespace}
+\end{titlepage}
+\newpage
+\pagenumbering{arabic}
+\tableofcontents
+% 7. uncomment this (if applicable). Consider adding a page break.
+%\listoffigures
+%\listoftables
+\clearpage
+
+% 8. now you write!
+\newpage
+\section{Description of Problem}
+As noted in the abstract, our team reached out to our respective clients looking to gain a better grasp of the project at hand and prospective performance metrics, and have only received brief project details at a high level. Therefore, the following summary is mostly based on information given to us via the Capstone Project Portal and personal research conducted. According to the information given about this project from the Capstone Project Portal website, one sees that this project will involve using the Intel RealSense cameras to build a database of human gesture images. Our group is then expected to use this gesture image library to train a ML model, with the goal of having the model accurately identify human gestures from the RealSense camera video feed. We are also expected to build a program with a GUI interface to present the text representation of classified gestures. Furthermore, as stated in the portal website, the motivations behind this project include the desire to create a cost effective system that is accessible system and aids people in communicating in more effective ways; even having the possibly of aiding those with difficulties using speech as a primary communication medium\cite{first}. Therefore, this defines the end goal of our project to be able to identify American Sign Language gestures using our ML model wrapped in the GUI application.
+
+Information found on Intel’s RealSense use case website reveals that this product is used mainly in computer vision projects, which utilize ML algorithms to process live video feed. Implementations vary across different technology fields including Robotics, 3D scanning, Drones, Object Measurement, Virtual Reality/Augmented Reality, and much more. Many examples of different success stories can be found across the various implementations, nodding to the fact that the RealSense technology can perform significantly well in computer vision tasks, when paired with the appropriate ML algorithms\cite{second}. Part of the information our group sought to find from our clients was exactly how we are expected to interface with the camera, and if there already exists software ready to read output from the camera, or if we were expected to build this. Our client has pointed out the existence of a Software Development Kit (SDK) created by Intel to allow users to interface with the camera. With this information at hand, our group anticipates the task of building a program to interact with the camera to be a more direct process, knowing that there already exists code to utilize the hardware components.
+
+
+\section{Problem Statement}
+As noted in prior sections, a thorough conversation regarding the details of our project has yet to occur between our project group members and our respective clients. However, after reviewing the project description and conducting research on the RealSense camera and its applications, one comes to the realization that this task is going to involve the implementation of a computer vision technique in order to accomplish the gesture recognition task at hand. There are currently many ongoing research experiments in the field of computer vision, and this field is a subset of the field of ML. Multiple different ML techniques have been utilized in this task, and according to an article written by Romain Beaumont titles, \textit{Learning computer vision}, some of the more popular models include highly complex algorithms such as a Convolutional Neural Network or a slightly different approach of the same concept through a technique known as Generative Adversarial Network (GAN)\cite{third}. Despite the complexities of such algorithms, our group must be willing to dive into the unknown and embrace these topics as we begin to conduct research and identify which ML technique we will choose to implement for our gesture recognition task.
+
+Due to the fact that our group and respective clients have yet to identify a cemented solution for our machine learning technique, our group is proposing to our clients that we explore utilizing a transfer learning approach, which is one of the techniques mentioned in Beaumont’s article. Described in detail in Jason Brownlee’s article, \textit{A Gentle Introduction to Transfer Learning for Deep Learning}, transfer learning is a category of ML known as ‘deep learning’ which utilizes a pre-trained Convolutional Neural Network as a baseline to begin training a new task with. New training information is fed into the algorithm with the goal using existing classification capabilities to accomplish a new task, while using little training data while doing so\cite{fourth}. We feel as though this ML approach might be the best option for our group to utilize, considering the timeline of our project and the fact that we are expected to build our gesture training database presumably from scratch. These two facts force our group to a potentially small database of training sets and limited time to implement/train an algorithm and develop a GUI for presentation. Therefore, we are proposing to our clients that utilizing a transfer learning approach may yield the best outcome for our group’s task of gesture recognition, given our context.
+
+\section{Performance Metrics}
+As noted above, our group was unable to establish detailed performance metrics with our client, outlining what potential end goals would look like for our group’s project. The clients have given us a brief description of what they expect out of our project and what our project should accomplish. We hope that meeting with our client will allow us to begin discussion leading to further defining project specifications. That being said, our group has established potential end goals scenarios, and have presented these to our client via email. One performance metric question asked by our group involves the idea of prioritization, and how we will dictate what our ML model will eventually be able to classify; are there certain gesture classifications we are wanting to prioritize over others? Furthermore, our group asked if our client had specific quantitative performance metrics in mind, such as an end goal involving being able to classify a certain total number of gestures. Once our group is able to finalize weekly meeting times with our client, we may begin detailing some of the finer project components, and our group will have a more solidified idea on the potential avenues that may be taken with this project. 
+
+\begin{thebibliography}{9}
+
+\bibitem{first} 
+Senior Capstone Project Portal. 
+\textit{Gesture Recognition using new Intel Real Sense coded light camera}. 
+Oregon State University, 2019. Retrieved on October 11, 2019 from http://eecs.oregonstate.edu/capstone/.
+
+\bibitem{second} 
+Use Cases. 
+\textit{Intel RealSense}. 
+Intel. Retrieved on October 11, 2019 from https://www.intelrealsense.com/use-cases/.
+
+\bibitem{third} 
+Beaumont, R. 
+\textit{Learning computer vision}. 
+Towards Data Science, 2018. Retrieved on October 11, 2019 from https://towardsdatascience.com/learning-computer-vision-41398ad9941f.
+
+\bibitem{fourth} 
+Brownlee, J. 
+\textit{A Gentle Introduction to Transfer Learning for Deep Learning}. 
+Machine Learning Mastery, 2019. Retrieved on October 11, 2019 from https://machinelearningmastery.com/transfer-learning-for-deep-learning/.
+
+
+\end{thebibliography}
+
+\end{document}
