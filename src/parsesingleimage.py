@@ -38,6 +38,30 @@ def normalizeDepthImage(depth_image):
 
     return np.asanyarray(depth_image_normalized);
 
+def outputData(outputdepthtotal, outputdepth, depth_image):
+    print("Outputting Depth Image\n")
+    print("Size of depth image: " + str(depth_image.size) + " \n")
+    outputdepth.write("[");
+    outputdepthtotal.write("[");
+    for i in range(len(depth_image)):
+        outputdepth.write("[");
+        outputdepthtotal.write("[");
+        for x in range(len(depth_image[i])):
+            if (x == (len(depth_image[i]) - 1)):
+                outputdepth.write(str(depth_image[i][x]));
+                outputdepthtotal.write(str(depth_image[i][x]));
+            else:
+                outputdepth.write(str(depth_image[i][x]) + ",");
+                outputdepthtotal.write(str(depth_image[i][x]) + ",");
+        if (i == (len(depth_image) - 1)):
+            outputdepth.write("]");
+            outputdepthtotal.write("]");
+        else:
+            outputdepth.write("],");
+            outputdepthtotal.write("],");
+    outputdepth.write("]");
+    outputdepthtotal.write("],");
+
 def gather_camera_image():
     # Create a pipeline
     pipeline = rs.pipeline()
@@ -100,27 +124,6 @@ def gather_camera_image():
     depth_image = normalizeDepthImage(depth_image);
 
     #Writing depth image to file
-    print("Outputting Depth Image\n")
-    print("Size of depth image: " + str(depth_image.size) + " \n")
-    outputdepth.write("[");
-    outputdepthtotal.write("[");
-    for i in range(len(depth_image)):
-        outputdepth.write("[");
-        outputdepthtotal.write("[");
-        for x in range(len(depth_image[i])):
-            if (x == (len(depth_image[i]) - 1)):
-                outputdepth.write(str(depth_image[i][x]));
-                outputdepthtotal.write(str(depth_image[i][x]));
-            else:
-                outputdepth.write(str(depth_image[i][x]) + ",");
-                outputdepthtotal.write(str(depth_image[i][x]) + ",");
-        if (i == (len(depth_image) - 1)):
-            outputdepth.write("]");
-            outputdepthtotal.write("]");
-        else:
-            outputdepth.write("],");
-            outputdepthtotal.write("],");
-    outputdepth.write("]");
-    outputdepthtotal.write("],");
+    outputData(outputdepthtotal, outputdepth, depth_image);
 
     pipeline.stop()
