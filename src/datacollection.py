@@ -16,7 +16,7 @@ import numpy as np
 import cv2
 # Import h5py to compress files into hdf5 format for dataset, if you need this run "pip install h5py"
 import h5py
-# import os to perform os calls
+# import os to perform os.path calls for file i/o
 import os
 
 
@@ -78,7 +78,8 @@ def outputClassification(text):
         with h5py.File('datasets/train_y.hdf5', 'w') as train_y:
             train_y.create_dataset("train_y", data=textAsDataSet, compression="gzip", dtype='S10', maxshape=(None,));
 
-def gather_camera_image():
+# function that gathers camera image data, displays it, and asks for classification
+def gatherCameraImage():
     # Create a pipeline
     pipeline = rs.pipeline()
 
