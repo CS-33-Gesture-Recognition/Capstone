@@ -14,53 +14,69 @@ import pyrealsense2 as rs
 import numpy as np
 # Import OpenCV for easy image rendering, if you need this run "pip install opencv-python"
 import cv2
+# Import h5py to compress files into hdf5 format for dataset, if you need this run "pip install h5py"
+import h5py
+# import os to perform os calls
+import os
 
 
 # function used to normalize data from all real numbers to [0,1]
 def normalizeDepthImage(depth_image):
 
-    largest = [];
+    largest = 0.0;
     depth_image_normalized = [];
 
     for x in range(len(depth_image)):
-        largest.append(0.0);
         for i in range(len(depth_image[x])):
-            if (float(depth_image[x][i]) > largest[x]):
-                largest[x] = float(depth_image[x][i]);
+            if (float(depth_image[x][i]) > largest):
+                largest = float(depth_image[x][i]);
         
     for x in range(len(depth_image)):
         temp = [];
         for i in range(len(depth_image[x])):
-            if (largest[x] != 0.0):
-                temp.append(float(depth_image[x][i]) / float(largest[x]));
+            if (largest != 0.0):
+                temp.append(float(depth_image[x][i]) / float(largest));
                 depth_image[x][i] = temp[i];
         depth_image_normalized.append(temp);
 
     return np.asanyarray(depth_image_normalized);
 
-def outputData(outputdepthtotal, outputdepth, depth_image):
+# function that outputs training data from camera to dataset.
+def outputData(depth_image):
     print("Outputting Depth Image\n")
-    print("Size of depth image: " + str(depth_image.size) + " \n")
-    outputdepth.write("[");
-    outputdepthtotal.write("[");
-    for i in range(len(depth_image)):
-        outputdepth.write("[");
-        outputdepthtotal.write("[");
-        for x in range(len(depth_image[i])):
-            if (x == (len(depth_image[i]) - 1)):
-                outputdepth.write(str(depth_image[i][x]));
-                outputdepthtotal.write(str(depth_image[i][x]));
-            else:
-                outputdepth.write(str(depth_image[i][x]) + ",");
-                outputdepthtotal.write(str(depth_image[i][x]) + ",");
-        if (i == (len(depth_image) - 1)):
-            outputdepth.write("]");
-            outputdepthtotal.write("]");
-        else:
-            outputdepth.write("],");
-            outputdepthtotal.write("],");
-    outputdepth.write("]");
-    outputdepthtotal.write("],");
+    # Writing single image file
+    dset = {};
+
+    depth_image_flat = [];
+    for x in depth_image:
+        for y in x:
+            depth_image_flat.append(y);
+    depth_image_flat = np.asanyarray(depth_image_flat);
+
+    if ((os.path.isfile('datasets/train_x.hdf5'))):
+        print("Appending to train_x dataset");
+        with h5py.File('datasets/train_x.hdf5', 'a') as train_x:
+            train_x["train_x"].resize((train_x["train_x"].shape[0] + depth_image_flat.shape[0]), axis=0);
+            train_x["train_x"][-depth_image_flat.shape[0]:] = depth_image_flat;
+    else:
+        print("Creating new train_x dataset");
+        with h5py.File('datasets/train_x.hdf5', 'w') as train_x:
+            dset = train_x.create_dataset("train_x", data=depth_image_flat, compression="gzip", chunks=True, maxshape=(None,));
+
+# function that outputs classification from GUI to dataset.
+def outputClassification(text):
+    #Convert text to dataset for append.
+    textAsDataSet = np.asanyarray([text.lower().encode("ascii","ignore")]);
+
+    if (os.path.isfile('datasets/train_y.hdf5')):
+        print("Appending to train_y dataset");
+        with h5py.File('datasets/train_y.hdf5', 'a') as train_y:
+            train_y["train_y"].resize((train_y["train_y"].shape[0] + textAsDataSet.shape[0]), axis=0);
+            train_y["train_y"][-textAsDataSet.shape[0]:] = textAsDataSet;
+    else:
+        print("Creating train_y dataset");
+        with h5py.File('datasets/train_y.hdf5', 'w') as train_y:
+            train_y.create_dataset("train_y", data=textAsDataSet, compression="gzip", dtype='S10', maxshape=(None,));
 
 def gather_camera_image():
     # Create a pipeline
@@ -78,7 +94,6 @@ def gather_camera_image():
     # Getting the depth sensor's depth scale (see rs-align example for explanation)
     depth_sensor = profile.get_device().first_depth_sensor()
     depth_scale = depth_sensor.get_depth_scale()
-    print("Depth Scale is: " , depth_scale)
 
     # We will be removing the background of objects more than
     #  clipping_distance_in_meters meters away
@@ -90,9 +105,6 @@ def gather_camera_image():
     # The "align_to" is the stream type to which we plan to align depth frames.
     align_to = rs.stream.color
     align = rs.align(align_to)
-
-    outputdepthtotal = open('imagedepth', 'a')
-    outputdepth = open('singleimagedepth', 'w+')
 
     # Get frameset of color and depth
     frames = pipeline.wait_for_frames()
@@ -123,7 +135,10 @@ def gather_camera_image():
     #Normalize Depth Image
     depth_image = normalizeDepthImage(depth_image);
 
+    gestureText = input("What Gesture is this classified as?\nIf this is a bad gesture for training press ctrl-c.\n: ");
+    outputClassification(gestureText);
+
     #Writing depth image to file
-    outputData(outputdepthtotal, outputdepth, depth_image);
+    outputData(depth_image);
 
     pipeline.stop()
