@@ -136,9 +136,6 @@ def gatherCameraImage():
     #Normalize Depth Image
     depth_image = normalizeDepthImage(depth_image);
 
-    gestureText = input("What Gesture is this classified as?\nIf this is a bad gesture for training press ctrl-c.\n: ");
-    outputClassification(gestureText);
-
     #Writing depth image to file
     outputData(depth_image);
 
