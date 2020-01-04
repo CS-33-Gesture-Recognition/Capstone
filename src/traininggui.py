@@ -1,6 +1,5 @@
 #PyQt imports
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLineEdit 
-from PyQt5.QtCore import QThread
 
 import sys
 import datacollection as dc
