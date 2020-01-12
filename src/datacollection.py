@@ -52,7 +52,7 @@ def outputData(depth_image):
         for y in x:
             depth_image_flat.append(y);
     depth_image_flat = np.asanyarray(depth_image_flat);
-
+    print(depth_image_flat)
     if ((os.path.isfile('datasets/train_x.hdf5'))):
         print("Appending to train_x dataset");
         with h5py.File('datasets/train_x.hdf5', 'a') as train_x:
