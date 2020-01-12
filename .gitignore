@@ -1,0 +1,5 @@
+src/__pycache__/*
+
+src/*.dylib
+
+src/*.so
