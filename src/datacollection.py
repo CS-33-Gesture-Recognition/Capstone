@@ -6,7 +6,7 @@
 #####################################################
 
 # This code has been modified to capture one still frame of information and save it to a file
-#This will also briefly show the depth_image and 
+#This will also briefly show the depth_image and
 
 # First import the library, if you need this run "pip install pyrealsense2"
 import pyrealsense2 as rs
@@ -19,6 +19,12 @@ import h5py
 # import os to perform os.path calls for file i/o
 import os
 
+from datetime import datetime
+
+# import the Pillow package for img creation - 'pip install Pillow'
+from PIL import Image
+
+
 
 # function used to normalize data from all real numbers to [0,1]
 def normalizeDepthImage(depth_image):
@@ -30,7 +36,7 @@ def normalizeDepthImage(depth_image):
         for i in range(len(depth_image[x])):
             if (float(depth_image[x][i]) > largest):
                 largest = float(depth_image[x][i]);
-        
+
     for x in range(len(depth_image)):
         temp = [];
         for i in range(len(depth_image[x])):
@@ -78,8 +84,28 @@ def outputClassification(text):
         with h5py.File('datasets/train_y.hdf5', 'w') as train_y:
             train_y.create_dataset("train_y", data=textAsDataSet, compression="gzip", dtype='S10', maxshape=(None,));
 
+
+
+def outputDataToFileStructure(depth_image, label, color_image):
+    now = datetime.now(); # current date and time
+    date_time = now.strftime("%m_%d_%Y__%H_%M_%S");
+    print("depth_image: ", depth_image);
+    print("text: ", label);
+    file_path = 'trainingSets/' + label;
+    if not os.path.exists(file_path):
+        print("Creating filepath: ", file_path);
+        os.makedirs(file_path);
+    else:
+        print(file_path, " already exists");
+
+    file_path = file_path + '/' + date_time + '_test.png';
+    img = Image.fromarray(color_image, 'RGB');
+    img.save(file_path);
+
+
+
 # function that gathers camera image data, displays it, and asks for classification
-def gatherCameraImage():
+def gatherCameraImage(text):
     # Create a pipeline
     pipeline = rs.pipeline()
 
@@ -132,11 +158,11 @@ def gatherCameraImage():
     cv2.namedWindow('Align Example', cv2.WINDOW_AUTOSIZE)
     cv2.imshow('Align Example', images)
     key = cv2.waitKey(1)
-    
+
     #Normalize Depth Image
     depth_image = normalizeDepthImage(depth_image);
 
-    #Writing depth image to file
-    outputData(depth_image);
+    #outputting data to appropriate file structure
+    outputDataToFileStructure(depth_image, text, depth_colormap);
 
     pipeline.stop()

@@ -1,5 +1,5 @@
 #PyQt imports
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLineEdit 
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLineEdit
 
 import sys
 import datacollection as dc
@@ -30,8 +30,7 @@ class Container(QWidget):
 
 
     def onCaptureClick(self):
-        dc.gatherCameraImage();
-        dc.outputClassification(self.__textField);
+        dc.gatherCameraImage(self.__textField);
         print("self.__textField ", self.__textField);
         return;
 
@@ -48,4 +47,3 @@ def main():
 
 if __name__ == "__main__":
     main();
-
