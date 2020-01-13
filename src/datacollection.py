@@ -19,6 +19,7 @@ import h5py
 # import os to perform os.path calls for file i/o
 import os
 
+TRAINX_SINGLE_DATA_SIZE = 307200;
 
 # function used to normalize data from all real numbers to [0,1]
 def normalizeDepthImage(depth_image):
@@ -140,3 +141,19 @@ def gatherCameraImage():
     outputData(depth_image);
 
     pipeline.stop()
+
+def collectTrainingX():
+    if (os.path.exists('./datasets/train_x.hdf5')):
+        with h5py.File('./datasets/train_x.hdf5', 'r') as train_x_file:
+            train_x = train_x_file['train_x'];
+            train_x_data = np.reshape(train_x, (int(len(train_x)/TRAINX_SINGLE_DATA_SIZE), TRAINX_SINGLE_DATA_SIZE));
+            return train_x_data;
+
+def collectTrainingY():
+    if (os.path.exists('./datasets/train_y.hdf5')):
+        with h5py.File('./datasets/train_y.hdf5', 'r') as train_y_file:
+            train_y = train_y_file['train_y'];
+            train_y_data = [];
+            for y in train_y:
+                train_y_data.append(y.decode("utf-8"));
+            return train_y_data;
