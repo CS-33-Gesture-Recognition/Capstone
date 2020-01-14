@@ -156,4 +156,4 @@ def collectTrainingY():
             train_y_data = [];
             for y in train_y:
                 train_y_data.append(y.decode("utf-8"));
-            return train_y_data;
+            return np.asanyarray(train_y_data);
