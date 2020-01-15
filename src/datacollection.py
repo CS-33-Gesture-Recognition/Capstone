@@ -6,7 +6,7 @@
 #####################################################
 
 # This code has been modified to capture one still frame of information and save it to a file
-#This will also briefly show the depth_image and 
+#This will also briefly show the depth_image and
 
 # First import the library, if you need this run "pip install pyrealsense2"
 import pyrealsense2 as rs
@@ -19,6 +19,7 @@ import h5py
 # import os to perform os.path calls for file i/o
 import os
 
+TRAINX_SINGLE_DATA_SIZE = 307200;
 
 # function used to normalize data from all real numbers to [0,1]
 def normalizeDepthImage(depth_image):
@@ -30,7 +31,7 @@ def normalizeDepthImage(depth_image):
         for i in range(len(depth_image[x])):
             if (float(depth_image[x][i]) > largest):
                 largest = float(depth_image[x][i]);
-        
+
     for x in range(len(depth_image)):
         temp = [];
         for i in range(len(depth_image[x])):
@@ -52,7 +53,7 @@ def outputData(depth_image):
         for y in x:
             depth_image_flat.append(y);
     depth_image_flat = np.asanyarray(depth_image_flat);
-    print(depth_image_flat)
+
     if ((os.path.isfile('datasets/train_x.hdf5'))):
         print("Appending to train_x dataset");
         with h5py.File('datasets/train_x.hdf5', 'a') as train_x:
@@ -132,7 +133,7 @@ def gatherCameraImage():
     cv2.namedWindow('Align Example', cv2.WINDOW_AUTOSIZE)
     cv2.imshow('Align Example', images)
     key = cv2.waitKey(1)
-    
+
     #Normalize Depth Image
     depth_image = normalizeDepthImage(depth_image);
 
@@ -140,3 +141,19 @@ def gatherCameraImage():
     outputData(depth_image);
 
     pipeline.stop()
+
+def collectTrainingX():
+    if (os.path.exists('./datasets/train_x.hdf5')):
+        with h5py.File('./datasets/train_x.hdf5', 'r') as train_x_file:
+            train_x = train_x_file['train_x'];
+            train_x_data = np.reshape(train_x, (int(len(train_x)/TRAINX_SINGLE_DATA_SIZE), TRAINX_SINGLE_DATA_SIZE));
+            return train_x_data;
+
+def collectTrainingY():
+    if (os.path.exists('./datasets/train_y.hdf5')):
+        with h5py.File('./datasets/train_y.hdf5', 'r') as train_y_file:
+            train_y = train_y_file['train_y'];
+            train_y_data = [];
+            for y in train_y:
+                train_y_data.append(y.decode("utf-8"));
+            return train_y_data;
