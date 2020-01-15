@@ -1,23 +1,25 @@
 from sklearn.neural_network import MLPClassifier;
 import datacollection as dc;
+import numpy as np;
 
 
 def main():
     x = dc.collectTrainingX();
     y = dc.collectTrainingY();
 
-    clf = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(5, 2), random_state=1);
+    print('y size: ', len(y));
+    print('x dims: ', x.shape);
 
-    print('training on dataset');
-    clf.fit(x,y);
-    print('training on dataset complete');
-    
-    print('testing on same dataset');
-    for x_i in x:
-        print(clf.predict([x_i]));
-    
+    print('y: ', y);
+    print("x: ", x);
+
+    ex_x = [np.array([[1.0,2],[3,4]]),np.array([[5.,6],[7,8]])] # a list of numpy arrays
+    ex_y = [np.array([4.]), np.array([2.])]
+
+
+    print('ex_y: ', ex_y);
+    print("ex_x: ", ex_x);
 
 
 if __name__ == "__main__":
     main();
-    
