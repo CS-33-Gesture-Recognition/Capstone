@@ -121,7 +121,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
             # Iterate over data.
             for inputs, labels in dataloaders[phase]:
                 inputs = inputs.to(device)
-                labels = labels.to(device)
+                labels = labels.to(device).long();
 
                 # zero the parameter gradients
                 optimizer.zero_grad()
@@ -131,7 +131,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
                 with torch.set_grad_enabled(phase == 'train'):
                     outputs = model(inputs)
                     _, preds = torch.max(outputs, 1)
-                    loss = criterion(outputs, labels.long())
+                    loss = criterion(outputs, labels)
 
                     # backward + optimize only if in training phase
                     if phase == 'train':
