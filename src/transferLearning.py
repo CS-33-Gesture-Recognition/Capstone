@@ -28,20 +28,15 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu");
 # need an intermediate step where all the data is shuffled and then from there we split train/test/val
 # consider randomizing, and then k-fold
 
-x = dc.collectTrainingX();
+reshaped_x = dc.collectTrainingX();
 y = dc.collectTrainingY();
 
-reshaped_x = [];
 relabeled_y = [];
 
 #relabeling the classification vector
 for i in y:
     relabeled_y.append(LabelConverter(i));
 
-#reshaping the data itself to height x width dims
-for i in x:
-    temp = np.reshape(i, (480, 640));
-    reshaped_x.append(temp);
 
 #split train data
 train_data = [];

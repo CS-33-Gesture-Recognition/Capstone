@@ -147,7 +147,10 @@ def collectTrainingX():
         with h5py.File('./datasets/train_x.hdf5', 'r') as train_x_file:
             train_x = train_x_file['train_x'];
             train_x_data = np.reshape(train_x, (int(len(train_x)/TRAINX_SINGLE_DATA_SIZE), TRAINX_SINGLE_DATA_SIZE));
-            return train_x_data;
+            reshaped_x = [];
+            for i in train_x_data:
+                reshaped_x.append(np.reshape(i, (480, 640)));
+            return reshaped_x;
 
 def collectTrainingY():
     if (os.path.exists('./datasets/train_y.hdf5')):
