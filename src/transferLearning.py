@@ -1,10 +1,8 @@
 from __future__ import print_function, division
 
-import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.optim import lr_scheduler
-import numpy as np
 import torchvision
 from torchvision import datasets, models, transforms
 import matplotlib.pyplot as plt
@@ -12,44 +10,93 @@ import time
 import os
 import copy
 
-plt.ion()   # interactive mode
+import datacollection as dc;
+import numpy as np;
+import torch
+from torch.utils import data
 
 
-# Data augmentation and normalization for training
-# Just normalization for validation
-data_transforms = {
-    'train': transforms.Compose([
-        transforms.RandomResizedCrop(224),
-        transforms.RandomHorizontalFlip(),
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-    ]),
-    'val': transforms.Compose([
-        transforms.Resize(256),
-        transforms.CenterCrop(224),
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-    ]),
-}
+def LabelConverter(s):
+    if s == 'a':
+        return 0
+    else:
+        return 1
+    return -1;
 
-data_dir = 'test1_data/hymenoptera_data'
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu");
 
-image_datasets = {x: datasets.ImageFolder(os.path.join(data_dir, x),
-                                          data_transforms[x])
-                  for x in ['train', 'val']}
+# need an intermediate step where all the data is shuffled and then from there we split train/test/val
+# consider randomizing, and then k-fold
 
+x = dc.collectTrainingX();
+y = dc.collectTrainingY();
 
-dataloaders = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=4,
-                                             shuffle=True, num_workers=4)
-              for x in ['train', 'val']}
+reshaped_x = [];
+relabeled_y = [];
 
+#relabeling the classification vector
+for i in y:
+    relabeled_y.append(LabelConverter(i));
 
-dataset_sizes = {x: len(image_datasets[x]) for x in ['train', 'val']}
+#reshaping the data itself to height x width dims
+for i in x:
+    temp = np.reshape(i, (480, 640));
+    reshaped_x.append(temp);
 
-class_names = image_datasets['train'].classes
+#split train data
+train_data = [];
+train_labels = []
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+for i in range(0,20,1):
+# this gets me the single channel, now I want 3
+#   train_data.append([reshaped_x[i]]);
+# i think this gets me 3, and now the script is working
+   train_data.append([reshaped_x[i], reshaped_x[i], reshaped_x[i]]);
+   train_labels.append(relabeled_y[i]);
 
+for i in range(30,50,1):
+   train_data.append([reshaped_x[i], reshaped_x[i], reshaped_x[i]]);
+   train_labels.append(relabeled_y[i]);
+
+#create data set
+tensor_train_x = torch.Tensor(train_data); # transform to torch tensor
+tensor_train_y = torch.Tensor(train_labels);
+train_dataset = data.TensorDataset(tensor_train_x, tensor_train_y);
+
+#create training loader
+train_loader = data.DataLoader(train_dataset, shuffle=True, batch_size=4);
+
+#split val data
+val_data = [];
+val_labels = [];
+
+for i in range(20,30,1):
+   val_data.append([reshaped_x[i], reshaped_x[i], reshaped_x[i]]);
+   val_labels.append(relabeled_y[i]);
+
+for i in range(50,60,1):
+   val_data.append([reshaped_x[i], reshaped_x[i], reshaped_x[i]]);
+   val_labels.append(relabeled_y[i]);
+
+#create dataset
+tensor_val_x = torch.Tensor(val_data); # transform to torch tensor
+tensor_val_y = torch.Tensor(val_labels);
+val_dataset = data.TensorDataset(tensor_val_x, tensor_val_y);
+
+#create val loader
+val_loader = data.DataLoader(val_dataset, shuffle=True, batch_size=4);
+
+datasets = {};
+datasets['train'] = train_dataset;
+datasets['val'] = val_dataset;
+
+#create pair of loaders
+dataloaders = {};
+dataloaders['train'] = train_loader;
+dataloaders['val'] = val_loader;
+
+#get sizes
+dataset_sizes = {x: len(datasets[x]) for x in ['train', 'val']}
 
 def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
     since = time.time()
@@ -84,7 +131,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
                 with torch.set_grad_enabled(phase == 'train'):
                     outputs = model(inputs)
                     _, preds = torch.max(outputs, 1)
-                    loss = criterion(outputs, labels)
+                    loss = criterion(outputs, labels.long())
 
                     # backward + optimize only if in training phase
                     if phase == 'train':
@@ -119,7 +166,6 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
     model.load_state_dict(best_model_wts)
     return model
 
-
 model_ft = models.resnet18(pretrained=True)
 num_ftrs = model_ft.fc.in_features
 # Here the size of each output sample is set to 2.
@@ -136,5 +182,27 @@ optimizer_ft = optim.SGD(model_ft.parameters(), lr=0.001, momentum=0.9)
 # Decay LR by a factor of 0.1 every 7 epochs
 exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=7, gamma=0.1)
 
-model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler,
-                       num_epochs=25)
+model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler, num_epochs=25)
+
+# need a test function - from dibz
+
+#testing metrics
+"""
+ROC-AUC curves
+PR
+Confusion Matrix
+    Sensitivity - ability to correctly predict
+    Specificity -
+    Informedness - combined specificity & sensitivity into one metric
+
+"""
+
+
+# need to know how to export and re-use
+# use torch.save to export the model
+
+# maybe try to get this working with live data before moving forward and collecting all data
+
+# torch.save(mode_ft);
+
+print("done");
