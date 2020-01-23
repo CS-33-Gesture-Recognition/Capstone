@@ -162,14 +162,16 @@ def collectTrainingY():
             return train_y_data;
 
 def collectTestingX():
+    # Create a pipeline
     pipeline = rs.pipeline()
 
     #Create a config and configure the pipeline to stream
     #  different resolutions of color and depth streams
     config = rs.config()
     config.enable_stream(rs.stream.depth, 640, 480, rs.format.z16, 30)
+    config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
 
-     # Start streaming
+    # Start streaming
     profile = pipeline.start(config)
 
     # Getting the depth sensor's depth scale (see rs-align example for explanation)
@@ -191,7 +193,7 @@ def collectTestingX():
     frames = pipeline.wait_for_frames()
     # frames.get_depth_frame() is a 640x360 depth image
 
-     # Align the depth frame to color frame
+    # Align the depth frame to color frame
     aligned_frames = align.process(frames)
 
     # Get aligned frames
@@ -206,10 +208,13 @@ def collectTestingX():
     depth_image_3d = np.dstack((depth_image,depth_image,depth_image)) #depth image is 1 channel, color is 3 channels
     bg_removed = np.where((depth_image_3d > clipping_distance) | (depth_image_3d <= 0), grey_color, color_image)
 
+    # Render images
+    depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
+    images = np.hstack((bg_removed, depth_colormap))
+
+    #Normalize Depth Image
     depth_image = normalizeDepthImage(depth_image);
 
-    pipeline.stop();
+    pipeline.stop()
 
     return depth_image;
-
-
