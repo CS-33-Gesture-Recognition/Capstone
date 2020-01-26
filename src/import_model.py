@@ -26,7 +26,7 @@ num_ftrs = model.fc.in_features
 model.fc = nn.Linear(num_ftrs, num_labels)
 model = model.to(device)
 
-trained_model = torch.load('trained_model_3_labels.pth.tar', map_location=device)
+trained_model = torch.load('trained_model.pth.tar', map_location=device)
 model.load_state_dict(trained_model['state_dict'])
 
 model.eval();
@@ -44,7 +44,7 @@ while (response == 'y'):
 
     prediction = int(torch.max(output.data, 1)[1].numpy());
     print("predicted the letter: ", str(chr(prediction+97)));
-    
+
     response = input("keep testing?: ");
 
 print('done testing');
