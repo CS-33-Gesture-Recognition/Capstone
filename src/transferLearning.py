@@ -14,46 +14,41 @@ import datacollection as dc;
 import numpy as np;
 import torch
 from torch.utils import data
+import random
+from sklearn.model_selection import train_test_split
 
 
 def LabelConverter(s):
-    if s == 'a':
-        return 0
-    else:
-        return 1
-    return -1;
+    return list(map(ord, s))[0] - 97;
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu");
 
 # need an intermediate step where all the data is shuffled and then from there we split train/test/val
 # consider randomizing, and then k-fold
 
-reshaped_x = dc.collectTrainingX();
+x = dc.collectTrainingX();
 y = dc.collectTrainingY();
 
+num_labels = len(set(y));
+
 relabeled_y = [];
+reshaped_x = [];
 
 #relabeling the classification vector
 for i in y:
     relabeled_y.append(LabelConverter(i));
 
+# reshaping data for channel sizes
+for i in x:
+    reshaped_x.append([i, i, i]);
 
-#split train data
-train_data = [];
-train_labels = []
+#split the data
+train_data, val_data, train_labels, val_labels = train_test_split(reshaped_x, relabeled_y, test_size=.30, shuffle=True);
 
-for i in range(0,20,1):
-# this gets me the single channel, now I want 3
-#   train_data.append([reshaped_x[i]]);
-# i think this gets me 3, and now the script is working
-   train_data.append([reshaped_x[i], reshaped_x[i], reshaped_x[i]]);
-   train_labels.append(relabeled_y[i]);
+#print('len train data: ', len(train_data), '   len train labels: ', len(train_labels));
+#print('val train data: ', len(val_data), '   len val labels: ', len(val_labels));
 
-for i in range(30,50,1):
-   train_data.append([reshaped_x[i], reshaped_x[i], reshaped_x[i]]);
-   train_labels.append(relabeled_y[i]);
-
-#create data set
+#create train datasets
 tensor_train_x = torch.Tensor(train_data); # transform to torch tensor
 tensor_train_y = torch.Tensor(train_labels);
 train_dataset = data.TensorDataset(tensor_train_x, tensor_train_y);
@@ -61,19 +56,7 @@ train_dataset = data.TensorDataset(tensor_train_x, tensor_train_y);
 #create training loader
 train_loader = data.DataLoader(train_dataset, shuffle=True, batch_size=4);
 
-#split val data
-val_data = [];
-val_labels = [];
-
-for i in range(20,30,1):
-   val_data.append([reshaped_x[i], reshaped_x[i], reshaped_x[i]]);
-   val_labels.append(relabeled_y[i]);
-
-for i in range(50,60,1):
-   val_data.append([reshaped_x[i], reshaped_x[i], reshaped_x[i]]);
-   val_labels.append(relabeled_y[i]);
-
-#create dataset
+#create val dataset
 tensor_val_x = torch.Tensor(val_data); # transform to torch tensor
 tensor_val_y = torch.Tensor(val_labels);
 val_dataset = data.TensorDataset(tensor_val_x, tensor_val_y);
@@ -81,6 +64,7 @@ val_dataset = data.TensorDataset(tensor_val_x, tensor_val_y);
 #create val loader
 val_loader = data.DataLoader(val_dataset, shuffle=True, batch_size=4);
 
+#create pair of datasets
 datasets = {};
 datasets['train'] = train_dataset;
 datasets['val'] = val_dataset;
@@ -125,7 +109,9 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
                 # track history if only in train
                 with torch.set_grad_enabled(phase == 'train'):
                     outputs = model(inputs)
+                    #print('raw outputs:', outputs);
                     _, preds = torch.max(outputs, 1)
+                    #print("preds: ", preds, "   actual labels: ", labels);
                     loss = criterion(outputs, labels)
 
                     # backward + optimize only if in training phase
@@ -165,7 +151,7 @@ model_ft = models.resnet18(pretrained=True)
 num_ftrs = model_ft.fc.in_features
 # Here the size of each output sample is set to 2.
 # Alternatively, it can be generalized to nn.Linear(num_ftrs, len(class_names)).
-model_ft.fc = nn.Linear(num_ftrs, 2)
+model_ft.fc = nn.Linear(num_ftrs, num_labels);
 
 model_ft = model_ft.to(device)
 
@@ -178,6 +164,9 @@ optimizer_ft = optim.SGD(model_ft.parameters(), lr=0.001, momentum=0.9)
 exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=7, gamma=0.1)
 
 model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler, num_epochs=25)
+print('done training');
+torch.save({'state_dict': model_ft.state_dict()}, 'trained_model.pth.tar')
+print("done saving");
 
 # need a test function - from dibz
 

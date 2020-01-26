@@ -14,6 +14,8 @@ import datacollection as dc;
 
 
 print('begin loading');
+y = dc.collectTrainingY();
+num_labels = len(set(y));
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu");
 
@@ -21,10 +23,10 @@ model = models.resnet18(pretrained=True)
 num_ftrs = model.fc.in_features
 # Here the size of each output sample is set to 2.
 # Alternatively, it can be generalized to nn.Linear(num_ftrs, len(class_names)).
-model.fc = nn.Linear(num_ftrs, 2)
+model.fc = nn.Linear(num_ftrs, num_labels)
 model = model.to(device)
 
-trained_model = torch.load('trained_model.pth.tar', map_location=device)
+trained_model = torch.load('trained_model_3_labels.pth.tar', map_location=device)
 model.load_state_dict(trained_model['state_dict'])
 
 model.eval();
@@ -41,13 +43,8 @@ while (response == 'y'):
     output = model(ml_input);
 
     prediction = int(torch.max(output.data, 1)[1].numpy());
-    if (prediction == 0):
-        print('predicted an a!');
-    elif (prediction == 1):
-        print('predicted a b!');
-    else:
-        print("???");
-
+    print("predicted the letter: ", str(chr(prediction+97)));
+    
     response = input("keep testing?: ");
 
 print('done testing');
