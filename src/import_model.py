@@ -22,32 +22,32 @@ num_ftrs = model.fc.in_features
 # Here the size of each output sample is set to 2.
 # Alternatively, it can be generalized to nn.Linear(num_ftrs, len(class_names)).
 model.fc = nn.Linear(num_ftrs, 2)
+model = model.to(device)
 
 trained_model = torch.load('trained_model.pth.tar', map_location=device)
 model.load_state_dict(trained_model['state_dict'])
 
-test_data = dc.collectTestingX();
-
-three_channel_data = [];
-
-three_channel_data.append([test_data, test_data, test_data]);
-
-input = torch.Tensor(three_channel_data);
-
-#print(input.size());
-
-output = model(input);
-
-print("raw data: ",output.data);
-
-print("torch.max call: ", torch.max(output.data, 1)[1].numpy())
-
-prediction = int(torch.max(output.data, 1)[1].numpy())
-
-if (prediction == 0):
-    print('predicted an a!')
-elif (prediction == 1):
-    print('predicted a b!')
-else:
-    print('something else happened, ask Dibz')
+model.eval();
 print('done loading')
+
+response = input('start testing? (y/n): ');
+
+while (response == 'y'):
+    test_data = dc.collectTestingX();
+    three_channel_data = [];
+    three_channel_data.append([test_data, test_data, test_data]);
+    ml_input = torch.Tensor(three_channel_data);
+
+    output = model(ml_input);
+
+    prediction = int(torch.max(output.data, 1)[1].numpy());
+    if (prediction == 0):
+        print('predicted an a!');
+    elif (prediction == 1):
+        print('predicted a b!');
+    else:
+        print("???");
+
+    response = input("keep testing?: ");
+
+print('done testing');
