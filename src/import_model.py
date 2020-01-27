@@ -18,6 +18,7 @@ y = dc.collectTrainingY();
 num_labels = len(set(y));
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu");
+print(device);
 
 model = models.resnet18(pretrained=True)
 num_ftrs = model.fc.in_features
@@ -38,11 +39,11 @@ while (response == 'y'):
     test_data = dc.collectTestingX();
     three_channel_data = [];
     three_channel_data.append([test_data, test_data, test_data]);
-    ml_input = torch.Tensor(three_channel_data);
+    ml_input = torch.Tensor(three_channel_data).to(device);
 
     output = model(ml_input);
 
-    prediction = int(torch.max(output.data, 1)[1].numpy());
+    prediction = int(torch.max(output.data, 1)[1]);
     print("predicted the letter: ", str(chr(prediction+97)));
 
     response = input("keep testing?: ");
