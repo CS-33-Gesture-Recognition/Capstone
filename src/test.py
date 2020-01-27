@@ -5,8 +5,7 @@ import numpy as np;
 
 def main():
 
-    test_x = dc.collectTestingX();
-    print(test_x);
+    dc.gatherCameraImage();
 
 
 if __name__ == "__main__":

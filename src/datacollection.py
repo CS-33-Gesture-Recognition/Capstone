@@ -21,6 +21,32 @@ import os
 
 TRAINX_SINGLE_DATA_SIZE = 307200;
 
+def filterDepth(depth_image):
+
+    smallest = 50000.0;
+    depth_image_filtered = [];
+
+    for x in range(len(depth_image)):
+        for i in range(len(depth_image[x])):
+            if (float(depth_image[x][i]) < smallest and float(depth_image[x][i]) != 0):
+                smallest = float(depth_image[x][i]);
+
+    if (smallest == 50000.0):
+        smallest = 0.0;
+    
+    for x in range(len(depth_image)):
+        temp = [];
+        for i in range(len(depth_image[x])):
+            if (depth_image[x][i] != 0.0):
+                temp.append(depth_image[x][i] - smallest);
+                depth_image[x][i] = temp[i];
+            else:
+                temp.append(depth_image[x][i]);
+                depth_image[x][i] = temp[i];
+        depth_image_filtered.append(temp);
+
+    return np.asanyarray(depth_image_filtered);
+
 # function used to normalize data from all real numbers to [0,1]
 def normalizeDepthImage(depth_image):
 
@@ -135,6 +161,7 @@ def gatherCameraImage():
     key = cv2.waitKey(1)
 
     #Normalize Depth Image
+    depth_image = filterDepth(depth_image);
     depth_image = normalizeDepthImage(depth_image);
 
     #Writing depth image to file
@@ -213,6 +240,7 @@ def collectTestingX():
     images = np.hstack((bg_removed, depth_colormap))
 
     #Normalize Depth Image
+    depth_image = filterDepth(depth_image);
     depth_image = normalizeDepthImage(depth_image);
 
     pipeline.stop()
