@@ -21,6 +21,28 @@ import os
 
 TRAINX_SINGLE_DATA_SIZE = 307200;
 
+def invertDepth(depth_image):
+    largest = 0.0;
+    depth_image_inverted = [];
+
+    for x in range(len(depth_image)):
+        for i in range(len(depth_image[x])):
+            if (float(depth_image[x][i]) > largest):
+                largest = float(depth_image[x][i]);
+
+    for x in range(len(depth_image)):
+        temp = [];
+        for i in range(len(depth_image[x])):
+            if (depth_image[x][i] != 0.0):
+                temp.append(largest - depth_image[x][i]);
+                depth_image[x][i] = temp[i];
+            else:
+                temp.append(depth_image[x][i]);
+                depth_image[x][i] = temp[i];
+        depth_image_inverted.append(temp);
+
+    return np.asanyarray(depth_image_inverted);
+
 def filterDepth(depth_image):
 
     smallest = 50000.0;
@@ -160,8 +182,11 @@ def gatherCameraImage():
     cv2.imshow('Align Example', images)
     key = cv2.waitKey(1)
 
-    #Normalize Depth Image
+    #Invert depth image
+    depth_image = invertDepth(depth_image);
+    #Filter depth image
     depth_image = filterDepth(depth_image);
+    #Normalize depth image
     depth_image = normalizeDepthImage(depth_image);
 
     #Writing depth image to file
@@ -239,9 +264,13 @@ def collectTestingX():
     depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
     images = np.hstack((bg_removed, depth_colormap))
 
-    #Normalize Depth Image
+    #Invert depth image
+    depth_image = invertDepth(depth_image);
+    #Filter depth image
     depth_image = filterDepth(depth_image);
+    #Normalize depth image
     depth_image = normalizeDepthImage(depth_image);
+
 
     pipeline.stop()
 
