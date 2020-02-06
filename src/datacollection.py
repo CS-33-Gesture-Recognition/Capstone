@@ -18,6 +18,8 @@ import cv2
 import h5py
 # import os to perform os.path calls for file i/o
 import os
+# import image lib to save images
+from PIL import Image
 
 TRAINX_SINGLE_DATA_SIZE = 307200;
 
@@ -264,6 +266,7 @@ def collectTestingX():
     depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
     images = np.hstack((bg_removed, depth_colormap))
 
+    outputDataToFileStructure(depth_colormap, color_image);
     #Invert depth image
     depth_image = invertDepth(depth_image);
     #Filter depth image
@@ -275,3 +278,23 @@ def collectTestingX():
     pipeline.stop()
 
     return depth_image;
+
+def outputDataToFileStructure(depth_image, color_image):
+    #now = datetime.now()  # current date and time
+    #date_time = now.strftime("%m_%d_%Y__%H_%M_%S")
+    # print("depth_image: ", depth_image)
+    # print("text: ", label)
+    # file_path = 'trainingSets/' # + label
+
+    # if not os.path.exists(file_path):
+    #     print("Creating filepath: ", file_path)
+    #     os.makedirs(file_path)
+    # else:
+    #     print(file_path, " already exists")
+
+    #Arbitrary name to be overwritten for testing purposes
+    # file_path = file_path + '/' + 'color_test.png' 
+    img = Image.fromarray(color_image, 'RGB')
+    img.save("rgb_image.jpg")
+    img = Image.fromarray(depth_image, 'RGB')
+    img.save("depth_image.jpg")

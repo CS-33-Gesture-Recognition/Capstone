@@ -27,8 +27,8 @@ from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtCore import Qt
 
 # const strings
-image_01 = "rgb_image.jpeg"
-image_02 = "depth_image.jpeg"
+image_01 = "rgb_image.jpg"
+image_02 = "depth_image.jpg"
 image_width = 320
 image_height = 240
 capture_button_text = "Capture"
@@ -53,6 +53,12 @@ class Ui_MainWindow1(object):
 
         prediction = int(torch.max(output.data, 1)[1])
         print("done")
+        print('updating images')
+        pixmap01 = QPixmap(image_01).scaled( image_width, image_height, Qt.KeepAspectRatio)
+        pixmap02 = QPixmap(image_02).scaled( image_width, image_height, Qt.KeepAspectRatio)
+        self.image01.setPixmap(pixmap01)
+        self.image02.setPixmap(pixmap02)
+        print('images updated');
         return prediction;
 
     def capture_button_clicked(self):
