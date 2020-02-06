@@ -265,7 +265,7 @@ def collectTestingX():
     images = np.hstack((bg_removed, depth_colormap))
 
     #Save the image as a png before it is inverted
-    outputDataToFileStructure(depth_image, "", color_image)
+    outputDataToFileStructure(depth_image, color_image)
 
     #Invert depth image
     depth_image = invertDepth(depth_image);
