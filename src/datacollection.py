@@ -6,7 +6,7 @@
 #####################################################
 
 # This code has been modified to capture one still frame of information and save it to a file
-#This will also briefly show the depth_image and 
+#This will also briefly show the depth_image and
 
 # First import the library, if you need this run "pip install pyrealsense2"
 import pyrealsense2 as rs
@@ -31,7 +31,7 @@ def normalizeDepthImage(depth_image):
         for i in range(len(depth_image[x])):
             if (float(depth_image[x][i]) > largest):
                 largest = float(depth_image[x][i]);
-        
+
     for x in range(len(depth_image)):
         temp = [];
         for i in range(len(depth_image[x])):
@@ -133,7 +133,7 @@ def gatherCameraImage():
     cv2.namedWindow('Align Example', cv2.WINDOW_AUTOSIZE)
     cv2.imshow('Align Example', images)
     key = cv2.waitKey(1)
-    
+
     #Normalize Depth Image
     depth_image = normalizeDepthImage(depth_image);
 
