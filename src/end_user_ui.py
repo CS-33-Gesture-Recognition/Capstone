@@ -38,17 +38,8 @@ window_title_text = "CS-33 Gesture Recognition"
 
 
 class Ui_MainWindow1(object):
-    def capture_button_clicked(self):
-        prediction = prosess_image()
 
-        pixmap01 = QPixmap(image_01).scaled( image_width, image_height, Qt.KeepAspectRatio)
-        pixmap02 = QPixmap(image_02).scaled( image_width, image_height, Qt.KeepAspectRatio)
-        self.image01.setPixmap(pixmap01)
-        self.image02.setPixmap(pixmap02)
-        self.output_text.setText(str(chr(prediction+97)))
-        self.ML_output_text.setText("Testing ML")
-
-    def prosess_image():
+    def prosess_image(self):
         print("capturing data")
 
         test_data = dc.collectTestingX();
@@ -58,11 +49,21 @@ class Ui_MainWindow1(object):
         ml_input = torch.Tensor(three_channel_data).to(self.device)
 
         print("thinking")
-        output = self.model(ml_imput);
+        output = self.model(ml_input);
 
         prediction = int(torch.max(output.data, 1)[1])
         print("done")
         return prediction;
+
+    def capture_button_clicked(self):
+        prediction = self.prosess_image()
+
+        pixmap01 = QPixmap(image_01).scaled( image_width, image_height, Qt.KeepAspectRatio)
+        pixmap02 = QPixmap(image_02).scaled( image_width, image_height, Qt.KeepAspectRatio)
+        self.image01.setPixmap(pixmap01)
+        self.image02.setPixmap(pixmap02)
+        self.output_text.setText(str(chr(prediction+97)))
+        self.ML_output_text.setText("Testing ML")
 
     def setup(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -146,25 +147,25 @@ class Ui_MainWindow1(object):
         msg.setIcon(QMessageBox.Information)
         x = msg.exec_()
 
-    def import_model():
+    def importModel(self):
         print('begin loading');
         y = dc.collectTrainingY();
         num_labels = len(set(y));
 
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu");
-        print(device);
+        print(self.device);
 
         self.model = models.resnet18(pretrained=True)
-        num_ftrs = model.fc.in_features
+        num_ftrs = self.model.fc.in_features
         # Here the size of each output sample is set to 2.
         # Alternatively, it can be generalized to nn.Linear(num_ftrs, len(class_names)).
-        model.fc = nn.Linear(num_ftrs, num_labels)
-        model = model.to(device)
+        self.model.fc = nn.Linear(num_ftrs, num_labels)
+        self.model = self.model.to(self.device)
 
-        trained_model = torch.load('trained_model.pth.tar', map_location=device)
-        model.load_state_dict(trained_model['state_dict'])
+        trained_model = torch.load('trained_model.pth.tar', map_location=self.device)
+        self.model.load_state_dict(trained_model['state_dict'])
 
-        model.eval();
+        self.model.eval();
         print('done loading')
 
 
@@ -173,8 +174,8 @@ def main():
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow1()
-    ui.setup(MainWindow)
-    ui.import_model();
+    ui.setup( MainWindow)
+    ui.importModel();
     MainWindow.show()
     sys.exit(app.exec_())
 
