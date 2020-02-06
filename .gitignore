@@ -3,3 +3,7 @@ src/__pycache__/*
 src/*.dylib
 
 src/*.so
+
+.DS_store
+
+src/.DS_store

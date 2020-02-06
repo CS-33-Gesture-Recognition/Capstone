@@ -1,6 +1,7 @@
 import torch;
 import torch.nn as nn;
 import datacollection as dc;
+import numpy as np;
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu');
 print('running on device: ' + str(device));
@@ -19,33 +20,8 @@ class TwoLayerNet(nn.Module):
 
 def main():
 
-    x = torch.from_numpy(dc.collectTrainingX());
-    y = torch.from_numpy(dc.collectTrainingY());
-
-    model = TwoLayerNet(dc.TRAINX_SINGLE_DATA_SIZE, 50, 1);
-
-    print('training on dataset');
-    criterion = torch.nn.MSELoss(reduction='sum')
-    optimizer = torch.optim.SGD(model.parameters(), lr=0.1)
-
-    for z in range(500):
-
-        y_res = model(x);
-
-        loss = criterion(y_res, y);
-        if z % 100 == 99:
-            print(z, loss.item())
-
-        optimizer.zero_grad();
-        loss.backward();
-        optimizer.step();
-
-    print('training on dataset complete');
-    
-    print('testing on same dataset');
-    
+    dc.gatherCameraImage();
 
 
 if __name__ == "__main__":
     main();
-    
