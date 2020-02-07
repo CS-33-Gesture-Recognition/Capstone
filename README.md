@@ -15,6 +15,7 @@ The following dependencies need to be installed through pip
 ## Training Program
 
 Run ```python traininggui.py``` or ```python dev_ui.py``` to start training program.
+The traininggui.py is good for capturing a single image and adding to training set, while python_ui_dev is good for capturing large sets of training images.
 
 ## Training Model
 
@@ -46,4 +47,5 @@ Run ```python transferLearning.py``` to start training the machine learning mode
 ## Testing/End User Program
 
 Run ```python end_user_ui.py``` to start the testing program.
+Click the capture button in order to collect a testing image and display it in the GUI.
 
