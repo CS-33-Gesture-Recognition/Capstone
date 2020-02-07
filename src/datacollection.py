@@ -266,7 +266,7 @@ def collectTestingX():
     depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
     images = np.hstack((bg_removed, depth_colormap))
 
-    outputDataToFileStructure(depth_colormap, color_image);
+    outputDataToFileStructure(depth_colormap, bg_removed);
     #Invert depth image
     depth_image = invertDepth(depth_image);
     #Filter depth image
