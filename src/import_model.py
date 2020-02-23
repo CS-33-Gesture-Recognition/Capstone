@@ -45,6 +45,10 @@ while (response == 'y'):
 
     prediction = int(torch.max(output.data, 1)[1]);
     print("predicted the letter: ", str(chr(prediction+97)));
+    sm = nn.Softmax();
+    probabilities = sm(output);
+    print('probabilities: ', probabilities);
+    print('predicited probability: ', probabilities[0][prediction])
 
     response = input("keep testing?: ");
 
