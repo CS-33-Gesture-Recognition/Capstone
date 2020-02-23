@@ -21,7 +21,7 @@ class Ui_MainWindow(object):
             dc.gatherCameraImage()
             dc.outputClassification(char)
             print("Frame ", str(i + 1), " captured and saved to ", char)
-            time.sleep(0.5)
+            #time.sleep(0.5)
         print("done")
 ##################################################
 
