@@ -156,8 +156,7 @@ class Ui_MainWindow1(object):
 
     def importModel(self):
         print('begin loading');
-        y = dc.collectTrainingY();
-        num_labels = len(set(y));
+        num_labels = dc.getNumberLabels();
 
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu");
         print(self.device);
