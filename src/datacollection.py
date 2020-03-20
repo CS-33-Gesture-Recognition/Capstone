@@ -93,15 +93,15 @@ def normalizeDepthImage(depth_image):
 # function that outputs training data from camera to dataset.
 def outputData(depth_image):
     print("Outputting Depth Image\n")
-    # Writing single image file
-    dset = {};
 
+    # flatten image for easier chunking [[]] -> []
     depth_image_flat = [];
     for x in depth_image:
         for y in x:
             depth_image_flat.append(y);
     depth_image_flat = np.asanyarray(depth_image_flat);
 
+    # if dataset exists in path, append new depth image to it
     if ((os.path.isfile('datasets/train_x.hdf5'))):
         print("Appending to train_x dataset");
         with h5py.File('datasets/train_x.hdf5', 'a') as train_x:
@@ -110,6 +110,7 @@ def outputData(depth_image):
     else:
         print("Creating new train_x dataset");
         with h5py.File('datasets/train_x.hdf5', 'w') as train_x:
+            # creates new dataset, with gzip compression and chunking
             dset = train_x.create_dataset("train_x", data=depth_image_flat, compression="gzip", chunks=True, maxshape=(None,));
 
 # function that outputs classification from GUI to dataset.
@@ -296,3 +297,9 @@ def outputDataToFileStructure(depth_image, color_image):
     file_path = file_path + '/' + 'color_test.png' 
     img = Image.fromarray(color_image, 'RGB')
     img.save(file_path)
+
+def checkRenderNewGesture(depth_image):
+    if (np.max(depth_image) > 0):
+        return true;
+    else:
+        return false;
