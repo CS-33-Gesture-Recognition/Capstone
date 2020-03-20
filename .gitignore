@@ -7,3 +7,5 @@ src/*.so
 .DS_store
 
 src/.DS_store
+
+src/*.jpg
