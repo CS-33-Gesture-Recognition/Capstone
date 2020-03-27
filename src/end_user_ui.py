@@ -25,6 +25,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtCore import Qt
+from PIL import Image
 
 # const strings
 image_01 = "rgb_image.jpg"
@@ -41,12 +42,18 @@ class Ui_MainWindow1(object):
 
     def prosess_image(self):
         print("capturing data")
-
+        data_transforms = transforms.Compose([
+                transforms.Resize(256),
+                transforms.CenterCrop(224),
+                transforms.ToTensor(),
+                transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+                ])
         test_data = dc.collectTestingX();
+        depth_colormap_image = Image.fromarray(test_data);
+        preformatted = data_transforms(depth_colormap_image);
+        ml_input = preformatted.unsqueeze(0);
         print("done gathering")
-        three_channel_data = []
-        three_channel_data.append([test_data, test_data, test_data])
-        ml_input = torch.Tensor(three_channel_data).to(self.device)
+
 
         print("thinking")
         output = self.model(ml_input);
@@ -156,7 +163,8 @@ class Ui_MainWindow1(object):
 
     def importModel(self):
         print('begin loading');
-        num_labels = dc.getNumberLabels();
+        path = 'datasets';
+        num_labels = sum(os.path.isdir(os.path.join(path, i)) for i in os.listdir(path));
 
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu");
         print(self.device);

@@ -24,10 +24,10 @@ from PIL import Image
 # function that outputs training data from camera to dataset.
 def outputData(depth_colormap, gesture):
     strPath = './datasets/' + gesture + '/';
-    
+
     if (not os.path.exists(strPath)):
         os.mkdir(strPath);
-    
+
     files = os.listdir(strPath);
 
     idx = len(files);
@@ -149,7 +149,7 @@ def collectTestingX():
 
     pipeline.stop()
 
-    return depth_image;
+    return depth_colormap;
 
 def outputDataToFileStructure(depth_image, color_image):
     img = Image.fromarray(color_image, 'RGB')
