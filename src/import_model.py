@@ -44,7 +44,7 @@ print('done loading')
 response = input('start testing? (y/n): ');
 
 while (response == 'y'):
-    test_data = dc.collectTestingX();
+    test_data = dc.collectTestingX()[0];
     depth_colormap_image = Image.fromarray(test_data);
     preformatted = data_transforms(depth_colormap_image);
     # look at how the transferLearning script modifies the input and match that for this case

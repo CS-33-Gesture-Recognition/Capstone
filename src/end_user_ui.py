@@ -49,13 +49,12 @@ class Ui_MainWindow1(object):
                 transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
                 ])
         test_data = dc.collectTestingX();
+        closest = float("{0:.2f}".format(test_data[1]));
+        test_data = test_data[0];
         depth_colormap_image = Image.fromarray(test_data);
         preformatted = data_transforms(depth_colormap_image);
         ml_input = preformatted.unsqueeze(0).to(self.device);
-        print("done gathering")
 
-
-        print("thinking")
         output = self.model(ml_input);
 
         prediction = int(torch.max(output.data, 1)[1])
@@ -64,7 +63,7 @@ class Ui_MainWindow1(object):
         probability = sm(output)[0][prediction].item();
         print(probability);
         probability = float("{0:.2f}".format(probability));
-        self.ML_output_text.setText("Accuracy of Classification: " + str(probability));
+        self.ML_output_text.setText("Accuracy of Classification: " + str(probability) + '\n' + 'Distance from Camera: ' + str(closest) + ' m');
 
         print("done")
         print('updating images')

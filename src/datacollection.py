@@ -136,6 +136,15 @@ def collectTestingX():
     color_frame = aligned_frames.get_color_frame()
 
     depth_image = np.asanyarray(aligned_depth_frame.get_data())
+
+    depth = frames.get_depth_frame();
+    closest = 10000;
+
+    for y in range(480):
+        for x in range(640):
+            curr = depth.get_distance(x,y);
+            closest = curr if curr < closest and curr != 0 else closest;
+
     color_image = np.asanyarray(color_frame.get_data())
 
     # Remove background - Set pixels further than clipping_distance to grey
@@ -149,7 +158,7 @@ def collectTestingX():
 
     pipeline.stop()
 
-    return depth_colormap;
+    return (depth_colormap, closest);
 
 def outputDataToFileStructure(depth_image, color_image):
     img = Image.fromarray(color_image, 'RGB')
