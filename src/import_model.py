@@ -55,10 +55,12 @@ while (response == 'y'):
     output = model(ml_input);
     prediction = int(torch.max(output.data, 1)[1]);
     print("predicted the letter: ", str(chr(prediction+97)));
-    #sm = nn.Softmax();
-    #probabilities = sm(output);
+    sm = nn.Softmax(dim=1);
+    probabilities = sm(output);
     #print('probabilities: ', probabilities);
-    #print('predicited probability: ', probabilities[0][prediction])
+    print('predicted actual: ', probabilities[0][prediction].item());
+    print('predicited rounded probability: ', float("{0:.2f}".format(probabilities[0][prediction].item())))
+
 
     response = input("keep testing?: ");
 
