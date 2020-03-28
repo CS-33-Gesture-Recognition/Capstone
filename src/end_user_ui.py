@@ -59,6 +59,13 @@ class Ui_MainWindow1(object):
         output = self.model(ml_input);
 
         prediction = int(torch.max(output.data, 1)[1])
+
+        sm = nn.Softmax(dim=1);
+        probability = sm(output)[0][prediction].item();
+        print(probability);
+        probability = float("{0:.2f}".format(probability));
+        self.ML_output_text.setText("Accuracy of Classification: " + str(probability));
+
         print("done")
         print('updating images')
         pixmap01 = QPixmap(image_01).scaled( image_width, image_height, Qt.KeepAspectRatio)
@@ -66,6 +73,7 @@ class Ui_MainWindow1(object):
         self.image01.setPixmap(pixmap01)
         self.image02.setPixmap(pixmap02)
         print('images updated');
+        
         return prediction;
 
     def capture_button_clicked(self):
@@ -76,7 +84,6 @@ class Ui_MainWindow1(object):
         self.image01.setPixmap(pixmap01)
         self.image02.setPixmap(pixmap02)
         self.output_text.setText(str(chr(prediction+97)))
-        self.ML_output_text.setText("Testing ML")
 
     def setup(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
