@@ -40,7 +40,7 @@ window_title_text = "CS-33 Gesture Recognition"
 
 class Ui_MainWindow1(object):
 
-    def prosess_image(self):
+    def process_image(self):
         print("capturing data")
         data_transforms = transforms.Compose([
                 transforms.Resize(256),
@@ -51,7 +51,7 @@ class Ui_MainWindow1(object):
         test_data = dc.collectTestingX();
         depth_colormap_image = Image.fromarray(test_data);
         preformatted = data_transforms(depth_colormap_image);
-        ml_input = preformatted.unsqueeze(0);
+        ml_input = preformatted.unsqueeze(0).to(self.device);
         print("done gathering")
 
 
@@ -69,7 +69,7 @@ class Ui_MainWindow1(object):
         return prediction;
 
     def capture_button_clicked(self):
-        prediction = self.prosess_image()
+        prediction = self.process_image()
 
         pixmap01 = QPixmap(image_01).scaled( image_width, image_height, Qt.KeepAspectRatio)
         pixmap02 = QPixmap(image_02).scaled( image_width, image_height, Qt.KeepAspectRatio)
@@ -164,7 +164,8 @@ class Ui_MainWindow1(object):
     def importModel(self):
         print('begin loading');
         path = 'datasets';
-        num_labels = sum(os.path.isdir(os.path.join(path, i)) for i in os.listdir(path));
+        num_labels = dc.getNumberLabels();
+        # num_labels = sum(os.path.isdir(os.path.join(path, i)) for i in os.listdir(path));
 
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu");
         print(self.device);

@@ -49,7 +49,7 @@ while (response == 'y'):
     preformatted = data_transforms(depth_colormap_image);
     # look at how the transferLearning script modifies the input and match that for this case
 
-    ml_input = preformatted.unsqueeze(0);
+    ml_input = preformatted.unsqueeze(0).to(device);
 
 
     output = model(ml_input);
