@@ -20,7 +20,7 @@ if os.path.isdir('output_split'):
 
 # Split with a ratio.
 # To only split into training and validation set, set a tuple to `ratio`, i.e, `(.8, .2)`.
-split_folders.ratio('datasets', output="output_split", seed=1337, ratio=(.7, .3)) # default values
+split_folders.ratio('datasets', output="output_split", seed=1337, ratio=(.7, .15, .15)) # default values
 
 
 # Data augmentation and normalization for training
