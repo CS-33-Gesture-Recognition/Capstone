@@ -11,14 +11,22 @@ import numpy as np;
 import torch
 from torch.utils import data
 import datacollection as dc;
+from PIL import Image
 
 
 print('begin loading');
-y = dc.collectTrainingY();
-num_labels = len(set(y));
-
+path = 'datasets';
+num_labels = sum(os.path.isdir(os.path.join(path, i)) for i in os.listdir(path));
+print('num labels: ', num_labels);
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu");
 print(device);
+
+data_transforms = transforms.Compose([
+        transforms.Resize(256),
+        transforms.CenterCrop(224),
+        transforms.ToTensor(),
+        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+        ])
 
 model = models.resnet18(pretrained=True)
 num_ftrs = model.fc.in_features
@@ -36,19 +44,23 @@ print('done loading')
 response = input('start testing? (y/n): ');
 
 while (response == 'y'):
-    test_data = dc.collectTestingX();
-    three_channel_data = [];
-    three_channel_data.append([test_data, test_data, test_data]);
-    ml_input = torch.Tensor(three_channel_data).to(device);
+    test_data = dc.collectTestingX()[0];
+    depth_colormap_image = Image.fromarray(test_data);
+    preformatted = data_transforms(depth_colormap_image);
+    # look at how the transferLearning script modifies the input and match that for this case
+
+    ml_input = preformatted.unsqueeze(0).to(device);
+
 
     output = model(ml_input);
-
     prediction = int(torch.max(output.data, 1)[1]);
     print("predicted the letter: ", str(chr(prediction+97)));
-    sm = nn.Softmax();
+    sm = nn.Softmax(dim=1);
     probabilities = sm(output);
-    print('probabilities: ', probabilities);
-    print('predicited probability: ', probabilities[0][prediction])
+    #print('probabilities: ', probabilities);
+    print('predicted actual: ', probabilities[0][prediction].item());
+    print('predicited rounded probability: ', float("{0:.2f}".format(probabilities[0][prediction].item())))
+
 
     response = input("keep testing?: ");
 

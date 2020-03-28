@@ -1,81 +1,63 @@
 from __future__ import print_function, division
 
+import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.optim import lr_scheduler
+import numpy as np
 import torchvision
 from torchvision import datasets, models, transforms
 import matplotlib.pyplot as plt
 import time
 import os
 import copy
+import shutil
+import split_folders
 
-import datacollection as dc;
-import numpy as np;
-import torch
-from torch.utils import data
-import random
-from sklearn.model_selection import train_test_split
+if os.path.isdir('output_split'):
+    shutil.rmtree('output_split');
 
 
-def LabelConverter(s):
-    return list(map(ord, s))[0] - 97;
+# Split with a ratio.
+# To only split into training and validation set, set a tuple to `ratio`, i.e, `(.8, .2)`.
+split_folders.ratio('datasets', output="output_split", seed=1337, ratio=(.7, .15, .15)) # default values
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu");
 
-# need an intermediate step where all the data is shuffled and then from there we split train/test/val
-# consider randomizing, and then k-fold
+# Data augmentation and normalization for training
+# Just normalization for validation
+data_transforms = {
+    'train': transforms.Compose([
+        transforms.RandomResizedCrop(224),
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor(),
+        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+    ]),
+    'val': transforms.Compose([
+        transforms.Resize(256),
+        transforms.CenterCrop(224),
+        transforms.ToTensor(),
+        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+    ]),
+}
 
-x = dc.collectTrainingX();
-y = dc.collectTrainingY();
+data_dir = 'output_split'
 
-num_labels = len(set(y));
+image_datasets = {x: datasets.ImageFolder(os.path.join(data_dir, x),
+                                          data_transforms[x])
+                  for x in ['train', 'val']}
 
-relabeled_y = [];
-reshaped_x = [];
 
-#relabeling the classification vector
-for i in y:
-    relabeled_y.append(LabelConverter(i));
+dataloaders = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=4,
+                                             shuffle=True, num_workers=4)
+              for x in ['train', 'val']}
 
-# reshaping data for channel sizes
-for i in x:
-    reshaped_x.append([i, i, i]);
 
-#split the data
-train_data, val_data, train_labels, val_labels = train_test_split(reshaped_x, relabeled_y, test_size=.30, shuffle=True);
+dataset_sizes = {x: len(image_datasets[x]) for x in ['train', 'val']}
 
-#print('len train data: ', len(train_data), '   len train labels: ', len(train_labels));
-#print('val train data: ', len(val_data), '   len val labels: ', len(val_labels));
-
-#create train datasets
-tensor_train_x = torch.Tensor(train_data); # transform to torch tensor
-tensor_train_y = torch.Tensor(train_labels);
-train_dataset = data.TensorDataset(tensor_train_x, tensor_train_y);
-
-#create training loader
-train_loader = data.DataLoader(train_dataset, shuffle=True, batch_size=4);
-
-#create val dataset
-tensor_val_x = torch.Tensor(val_data); # transform to torch tensor
-tensor_val_y = torch.Tensor(val_labels);
-val_dataset = data.TensorDataset(tensor_val_x, tensor_val_y);
-
-#create val loader
-val_loader = data.DataLoader(val_dataset, shuffle=True, batch_size=4);
-
-#create pair of datasets
-datasets = {};
-datasets['train'] = train_dataset;
-datasets['val'] = val_dataset;
-
-#create pair of loaders
-dataloaders = {};
-dataloaders['train'] = train_loader;
-dataloaders['val'] = val_loader;
-
-#get sizes
-dataset_sizes = {x: len(datasets[x]) for x in ['train', 'val']}
+class_names = image_datasets['train'].classes
+print("class_names: ", class_names);
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+print('num classes: ', len(class_names));
 
 def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
     since = time.time()
@@ -100,8 +82,9 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
             # Iterate over data.
             for inputs, labels in dataloaders[phase]:
                 inputs = inputs.to(device)
-                labels = labels.to(device).long();
-
+                labels = labels.to(device)
+                #print("inputs: ",inputs);
+                #print("labels: ",labels);
                 # zero the parameter gradients
                 optimizer.zero_grad()
 
@@ -109,9 +92,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
                 # track history if only in train
                 with torch.set_grad_enabled(phase == 'train'):
                     outputs = model(inputs)
-                    #print('raw outputs:', outputs);
                     _, preds = torch.max(outputs, 1)
-                    #print("preds: ", preds, "   actual labels: ", labels);
                     loss = criterion(outputs, labels)
 
                     # backward + optimize only if in training phase
@@ -147,11 +128,12 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
     model.load_state_dict(best_model_wts)
     return model
 
+
 model_ft = models.resnet18(pretrained=True)
 num_ftrs = model_ft.fc.in_features
 # Here the size of each output sample is set to 2.
 # Alternatively, it can be generalized to nn.Linear(num_ftrs, len(class_names)).
-model_ft.fc = nn.Linear(num_ftrs, num_labels);
+model_ft.fc = nn.Linear(num_ftrs, len(class_names))
 
 model_ft = model_ft.to(device)
 
@@ -165,28 +147,8 @@ exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=7, gamma=0.1)
 
 model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler, num_epochs=25)
 print('done training');
+if os.path.isfile('trained_model.pth.tar'):
+    os.remove('trained_model.pth.tar')
+
 torch.save({'state_dict': model_ft.state_dict()}, 'trained_model.pth.tar')
 print("done saving");
-
-# need a test function - from dibz
-
-#testing metrics
-"""
-ROC-AUC curves
-PR
-Confusion Matrix
-    Sensitivity - ability to correctly predict
-    Specificity -
-    Informedness - combined specificity & sensitivity into one metric
-
-"""
-
-
-# need to know how to export and re-use
-# use torch.save to export the model
-
-# maybe try to get this working with live data before moving forward and collecting all data
-
-# torch.save(mode_ft);
-
-print("done");

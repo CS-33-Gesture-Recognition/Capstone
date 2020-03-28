@@ -25,6 +25,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtCore import Qt
+from PIL import Image
 
 # const strings
 image_01 = "rgb_image.jpg"
@@ -39,19 +40,31 @@ window_title_text = "CS-33 Gesture Recognition"
 
 class Ui_MainWindow1(object):
 
-    def prosess_image(self):
+    def process_image(self):
         print("capturing data")
-
+        data_transforms = transforms.Compose([
+                transforms.Resize(256),
+                transforms.CenterCrop(224),
+                transforms.ToTensor(),
+                transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+                ])
         test_data = dc.collectTestingX();
-        print("done gathering")
-        three_channel_data = []
-        three_channel_data.append([test_data, test_data, test_data])
-        ml_input = torch.Tensor(three_channel_data).to(self.device)
+        closest = float("{0:.2f}".format(test_data[1]));
+        test_data = test_data[0];
+        depth_colormap_image = Image.fromarray(test_data);
+        preformatted = data_transforms(depth_colormap_image);
+        ml_input = preformatted.unsqueeze(0).to(self.device);
 
-        print("thinking")
         output = self.model(ml_input);
 
         prediction = int(torch.max(output.data, 1)[1])
+
+        sm = nn.Softmax(dim=1);
+        probability = sm(output)[0][prediction].item();
+        print(probability);
+        probability = float("{0:.2f}".format(probability));
+        self.ML_output_text.setText("Accuracy of Classification: " + str(probability) + '\n' + 'Distance from Camera: ' + str(closest) + ' m');
+
         print("done")
         print('updating images')
         pixmap01 = QPixmap(image_01).scaled( image_width, image_height, Qt.KeepAspectRatio)
@@ -59,17 +72,17 @@ class Ui_MainWindow1(object):
         self.image01.setPixmap(pixmap01)
         self.image02.setPixmap(pixmap02)
         print('images updated');
+        
         return prediction;
 
     def capture_button_clicked(self):
-        prediction = self.prosess_image()
+        prediction = self.process_image()
 
         pixmap01 = QPixmap(image_01).scaled( image_width, image_height, Qt.KeepAspectRatio)
         pixmap02 = QPixmap(image_02).scaled( image_width, image_height, Qt.KeepAspectRatio)
         self.image01.setPixmap(pixmap01)
         self.image02.setPixmap(pixmap02)
         self.output_text.setText(str(chr(prediction+97)))
-        self.ML_output_text.setText("Testing ML")
 
     def setup(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -156,8 +169,9 @@ class Ui_MainWindow1(object):
 
     def importModel(self):
         print('begin loading');
-        y = dc.collectTrainingY();
-        num_labels = len(set(y));
+        path = 'datasets';
+        num_labels = dc.getNumberLabels();
+        # num_labels = sum(os.path.isdir(os.path.join(path, i)) for i in os.listdir(path));
 
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu");
         print(self.device);

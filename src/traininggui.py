@@ -9,6 +9,7 @@ class Container(QWidget):
     def __init__(self):
         super().__init__();
         self.__textField = "";
+        self.__count = "1";
         self.initUI();
 
     def initUI(self):
@@ -18,20 +19,28 @@ class Container(QWidget):
         inputText.resize(150, 100);
         inputText.textChanged.connect(self.onTextChange);
 
+        inputImageCount = QLineEdit(self.__count, self);
+        inputImageCount.setToolTip('Input Amount Of Gestures To Capture');
+        inputImageCount.resize(150, 100);
+        inputImageCount.move(150,0);
+        inputImageCount.textChanged.connect(self.onImageCountChange);
+
         captureButton = QPushButton('Capture Data', self);
         captureButton.setToolTip('Use this button to capture an image from camera');
         captureButton.resize(150, 100);
-        captureButton.move(150, 0);
+        captureButton.move(300, 0);
         captureButton.clicked.connect(self.onCaptureClick);
 
     def onTextChange(self, text):
         self.__textField = text;
         return;
 
+    def onImageCountChange(self, count):
+        self.__count = count;
+        return;
 
     def onCaptureClick(self):
-        dc.gatherCameraImage();
-        dc.outputClassification(self.__textField);
+        dc.gatherCameraImage(self.__textField, int(self.__count));
         print("self.__textField ", self.__textField);
         return;
 
@@ -40,7 +49,7 @@ class Container(QWidget):
 def main():
     app = QApplication(sys.argv);
     window = Container();
-    window.setGeometry(0, 0, 300, 100);
+    window.setGeometry(0, 0, 450, 100);
     window.setWindowTitle("Gesture Recognition Training GUI");
     window.show();
 
