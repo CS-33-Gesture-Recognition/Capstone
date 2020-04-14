@@ -14,6 +14,7 @@ import copy
 import shutil
 import split_folders
 
+#deleting old output train/test/val directory if exists
 if os.path.isdir('output_split'):
     shutil.rmtree('output_split');
 
@@ -42,23 +43,25 @@ data_transforms = {
 
 data_dir = '../output_split'
 
+#load in the training and validation data into dataloaders and perform transofmrations
+data_dir = 'output_split'
 image_datasets = {x: datasets.ImageFolder(os.path.join(data_dir, x),
                                           data_transforms[x])
                   for x in ['train', 'val']}
-
-
 dataloaders = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=4,
                                              shuffle=True, num_workers=4)
               for x in ['train', 'val']}
 
-
+# get the size of each dataset
 dataset_sizes = {x: len(image_datasets[x]) for x in ['train', 'val']}
 
+#set device (CPU or GPU) and obtain class names
 class_names = image_datasets['train'].classes
-print("class_names: ", class_names);
+#print("class_names: ", class_names);
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-print('num classes: ', len(class_names));
+#print('num classes: ', len(class_names));
 
+# method to train the transfer learning model
 def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
     since = time.time()
 
@@ -129,12 +132,13 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
     return model
 
 
+#opatin the resnet18 model for transfer learning
 model_ft = models.resnet18(pretrained=True)
 num_ftrs = model_ft.fc.in_features
-# Here the size of each output sample is set to 2.
-# Alternatively, it can be generalized to nn.Linear(num_ftrs, len(class_names)).
-model_ft.fc = nn.Linear(num_ftrs, len(class_names))
 
+#set the size of each output sample
+model_ft.fc = nn.Linear(num_ftrs, len(class_names))
+#specify device in which to run model features
 model_ft = model_ft.to(device)
 
 criterion = nn.CrossEntropyLoss()
@@ -145,10 +149,14 @@ optimizer_ft = optim.SGD(model_ft.parameters(), lr=0.001, momentum=0.9)
 # Decay LR by a factor of 0.1 every 7 epochs
 exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=7, gamma=0.1)
 
+#call method to train model and return best performing model for output
 model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler, num_epochs=25)
-print('done training');
-if os.path.isfile('trained_model.pth.tar'):
-    os.remove('trained_model.pth.tar')
 
-torch.save({'state_dict': model_ft.state_dict()}, 'trained_model.pth.tar')
+print('done training');
+#delete old output model if exists
+if os.path.isfile('./ML/trained_model.pth.tar'):
+    os.remove('./ML/trained_model.pth.tar')
+
+#save the model for input to main end user program
+torch.save({'state_dict': model_ft.state_dict()}, './ML/trained_model.pth.tar')
 print("done saving");

@@ -16,9 +16,7 @@ import split_folders
 from sklearn.metrics import confusion_matrix
 
 
-
-# Data augmentation and normalization for training
-# Just normalization for validation
+#  normalization for testing
 data_transforms = {
     'test': transforms.Compose([
         transforms.Resize(256),
@@ -34,7 +32,6 @@ image_datasets = {x: datasets.ImageFolder(os.path.join(data_dir, x),
                                           data_transforms[x])
                   for x in ['test']}
 
-
 dataloaders = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=4,
                                              shuffle=True, num_workers=4)
               for x in ['test']}
@@ -43,21 +40,20 @@ dataset_sizes = {x: len(image_datasets[x]) for x in ['test']}
 
 class_names = image_datasets['test'].classes
 
-print("class_names: ", class_names);
+#set the device (CPU or GPU) and obtain total number of labels
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-print('num classes: ', len(class_names));
 num_labels = len(class_names);
 
+#obtain resnet 18 model to load in trained weight
 model = models.resnet18(pretrained=True)
 num_ftrs = model.fc.in_features
-# Here the size of each output sample is set to 2.
-# Alternatively, it can be generalized to nn.Linear(num_ftrs, len(class_names)).
+#set the output size of the model
 model.fc = nn.Linear(num_ftrs, num_labels)
 model = model.to(device)
 
 trained_model = torch.load('./ML/trained_model.pth.tar', map_location=device)
 model.load_state_dict(trained_model['state_dict'])
-
+#set model to eval mode for classification
 model.eval();
 print('done loading')
 
@@ -69,16 +65,13 @@ for inputs, labels in dataloaders['test']:
     labels = labels.to(device).long();
     outputs = model(inputs)
     _, preds = torch.max(outputs, 1)
-    #print('label: ', labels.data.numpy(), '    preds: ',preds.numpy());
-    #confusion_matrix()
     predlist=torch.cat([predlist,preds.view(-1).to(device)])
     lbllist=torch.cat([lbllist,labels.view(-1).to(device)])
 
-#print('label list: ', lbllist, '   pred list: ', predlist);
-
+#compute and print confusion matrix
 conf_mat=confusion_matrix(lbllist.cpu().numpy(), predlist.cpu().numpy())
 print(conf_mat)
 
-# Per-class accuracy
+# Per-class accuracy print
 class_accuracy=100*conf_mat.diagonal()/conf_mat.sum(1)
 print(class_accuracy)
