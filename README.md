@@ -7,6 +7,7 @@ This project will focus in developing a system that will be able to recognize ge
 
 Download python 3.7 from this release page https://www.python.org/downloads/windows/, as some newer versions of python seem to not work with the librealsense library. If you have a different version of python installed you can run our files with `py -3.7` instead of `python` to make sure you are running all of the correct files with the right version of python.
 
+
 ## Dependency list
 
 The following dependencies need to be installed through pip
@@ -21,6 +22,32 @@ The following dependencies need to be installed through pip
 Installing through pip should be done as following:
 
 `{python version} -m pip install {package} --user`
+
+### Mac
+
+The librealsense library will need to manaully installed due to the Mac OS uncooperative nature with pip. Parts of the instructions originate from https://github.com/IntelRealSense/librealsense/blob/master/doc/installation_osx.md 
+
+- The librealsense library should be in a seperate folder outside this repo. 
+
+1. Install CommantLineTools `sudo xcode-select --install` or download XCode 6.0+ via the AppStore
+2. Install the Homebrew package manager via terminal - [link](http://brew.sh/)
+3. Install the following packages via brew:
+  * `brew install cmake libusb pkg-config`
+  * `brew cask install apenngrace/vulkan/vulkan-sdk`
+
+**Note** *librealsense* requires CMake version 3.8+ that can also be obtained via the [official CMake site](https://cmake.org/download/).  
+
+
+4. Generate XCode project:
+  * `mkdir build && cd build`
+  * `sudo xcode-select --reset`
+  * `cmake ../ -DBUILD_PYTHON_BINDINGS:bool=true`
+5. Build the Project
+  * `make -j2` and this will be slowest step
+
+- There will be a few symbolic links that will need to be copied from the librealsense library over to this repo in order for it compile. Below is an image of the files needed. 
+
+![alt text](https://i.imgur.com/cqNR27z.png)
 
 ## Training Program
 
