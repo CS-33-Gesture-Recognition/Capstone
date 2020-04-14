@@ -21,7 +21,7 @@ from PIL import Image
 
 # function that outputs training data from camera to dataset.
 def outputData(depth_colormap, gesture):
-    strPath = './datasets/' + gesture + '/';
+    strPath = '../datasets/' + gesture + '/';
 
     if (not os.path.exists(strPath)):
         os.mkdir(strPath);
@@ -160,10 +160,10 @@ def collectTestingX():
 
 def outputDataToFileStructure(depth_image, color_image):
     img = Image.fromarray(color_image, 'RGB')
-    img.save("rgb_image.jpg")
+    img.save("./UI/rgb_image.jpg")
     img = Image.fromarray(depth_image, 'RGB')
-    img.save("depth_image.jpg")
+    img.save("./UI/depth_image.jpg")
 
 def getNumberLabels():
-    dirs = os.listdir('./datasets/');
+    dirs = os.listdir('../datasets/');
     return len(dirs);

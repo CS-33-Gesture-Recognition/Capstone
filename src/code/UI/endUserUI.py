@@ -8,17 +8,15 @@
 
 from __future__ import print_function, division
 
+import torch
 import torch.nn as nn
+from torch.utils import data
 import torchvision
 from torchvision import datasets, models, transforms
-import time
+import sys
 import os
 import copy
-import datacollection as dc;
 import numpy as np;
-import torch
-from torch.utils import data
-import datacollection as dc
 import time
 import backgroud_rc
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -27,9 +25,12 @@ from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtCore import Qt
 from PIL import Image
 
+sys.path.append(os.path.realpath('.'));
+import SW.datacollection as dc;
+
 # const strings
-image_01 = "rgb_image.jpg"
-image_02 = "depth_image.jpg"
+image_01 = "./UI/rgb_image.jpg"
+image_02 = "./UI/depth_image.jpg"
 image_width = 320
 image_height = 240
 capture_button_text = "Capture"
@@ -169,7 +170,7 @@ class Ui_MainWindow1(object):
 
     def importModel(self):
         print('begin loading');
-        path = 'datasets';
+        path = '../datasets';
         num_labels = dc.getNumberLabels();
         # num_labels = sum(os.path.isdir(os.path.join(path, i)) for i in os.listdir(path));
 
@@ -183,7 +184,7 @@ class Ui_MainWindow1(object):
         self.model.fc = nn.Linear(num_ftrs, num_labels)
         self.model = self.model.to(self.device)
 
-        trained_model = torch.load('trained_model.pth.tar', map_location=self.device)
+        trained_model = torch.load('ML/trained_model.pth.tar', map_location=self.device)
         self.model.load_state_dict(trained_model['state_dict'])
 
         self.model.eval();

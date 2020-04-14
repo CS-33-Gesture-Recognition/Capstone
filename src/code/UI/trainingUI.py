@@ -2,7 +2,10 @@
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLineEdit 
 
 import sys
-import datacollection as dc
+import os
+# Import datacollection methods
+sys.path.append(os.path.realpath('.'));
+import SW.datacollection as dc;
 
 class Container(QWidget):
 
@@ -14,17 +17,20 @@ class Container(QWidget):
 
     def initUI(self):
 
+        # Input text for classification
         inputText = QLineEdit(self.__textField, self);
         inputText.setToolTip('Input Gesture Classification Here');
         inputText.resize(150, 100);
         inputText.textChanged.connect(self.onTextChange);
 
+        # Input text for number of gestures to collect
         inputImageCount = QLineEdit(self.__count, self);
         inputImageCount.setToolTip('Input Amount Of Gestures To Capture');
         inputImageCount.resize(150, 100);
         inputImageCount.move(150,0);
         inputImageCount.textChanged.connect(self.onImageCountChange);
 
+        # Capture button to initialize capturing of data.
         captureButton = QPushButton('Capture Data', self);
         captureButton.setToolTip('Use this button to capture an image from camera');
         captureButton.resize(150, 100);

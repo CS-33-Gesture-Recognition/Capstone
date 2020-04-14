@@ -6,11 +6,10 @@ from torchvision import datasets, models, transforms
 import time
 import os
 import copy
-import datacollection as dc;
+import datacollection.datacollection as dc;
 import numpy as np;
 import torch
 from torch.utils import data
-import datacollection as dc;
 from PIL import Image
 
 
