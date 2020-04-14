@@ -85,10 +85,10 @@ This model is very intensive on CPUs, and will most likely take a while to run o
 ### ensure that datasets directory (containing training images) is in the current directory you are running training script on
 
 
-Run ```python transferLearning.py``` to start training the machine learning model.
+Run ```python ML/transferLearning.py``` to start training the machine learning model.
 
 ## Testing/End User Program
 
-Run ```python end_user_ui.py``` to start the testing program.
+Run ```python UI/endUserUi.py``` to start the testing program.
 Click the capture button in order to collect a testing image and display it in the GUI.
 
