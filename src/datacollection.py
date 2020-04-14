@@ -14,8 +14,6 @@ import pyrealsense2 as rs
 import numpy as np
 # Import OpenCV for easy image rendering, if you need this run "pip install opencv-python"
 import cv2
-# Import h5py to compress files into hdf5 format for dataset, if you need this run "pip install h5py"
-import h5py
 # import os to perform os.path calls for file i/o
 import os
 # import image lib to save images
