@@ -28,7 +28,7 @@ data_transforms = {
     ]),
 }
 
-data_dir = 'output_split'
+data_dir = '../output_split'
 
 image_datasets = {x: datasets.ImageFolder(os.path.join(data_dir, x),
                                           data_transforms[x])
@@ -55,7 +55,7 @@ num_ftrs = model.fc.in_features
 model.fc = nn.Linear(num_ftrs, num_labels)
 model = model.to(device)
 
-trained_model = torch.load('trained_model.pth.tar', map_location=device)
+trained_model = torch.load('./ML/trained_model.pth.tar', map_location=device)
 model.load_state_dict(trained_model['state_dict'])
 
 model.eval();
