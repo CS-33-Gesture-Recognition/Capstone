@@ -8,7 +8,7 @@ This project will focus in developing a system that will be able to recognize ge
 Download python 3.7 from this release page https://www.python.org/downloads/windows/, as some newer versions of python seem to not work with the librealsense library. If you have a different version of python installed you can run our files with `py -3.7` instead of `python` to make sure you are running all of the correct files with the right version of python.
 
 
-## Dependency list
+#### Dependency list
 
 The following dependencies need to be installed through pip
 - opencv-python
@@ -55,7 +55,7 @@ The librealsense library will need to manaully installed due to the Mac OS uncoo
 
 ## Training Program
 
-Run ```python traininggui.py``` or ```python dev_ui.py``` to start training program.
+Run ```python UI/trainingUI.py``` or ```python UI/dev_ui.py``` while inside the code folder to start training program.
 The traininggui.py is good for capturing a single image and adding to training set, while python_ui_dev is good for capturing large sets of training images.
 
 ## Training Model
