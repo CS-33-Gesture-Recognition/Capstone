@@ -5,16 +5,18 @@ import torchvision
 from torchvision import datasets, models, transforms
 import time
 import os
+import sys
 import copy
-import datacollection.datacollection as dc;
 import numpy as np;
 import torch
 from torch.utils import data
 from PIL import Image
 
+sys.path.append(os.path.realpath('.'));
+import SW.datacollection as dc;
 
 print('begin loading');
-path = 'datasets';
+path = '../datasets';
 num_labels = sum(os.path.isdir(os.path.join(path, i)) for i in os.listdir(path));
 print('num labels: ', num_labels);
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu");
@@ -34,7 +36,7 @@ num_ftrs = model.fc.in_features
 model.fc = nn.Linear(num_ftrs, num_labels)
 model = model.to(device)
 
-trained_model = torch.load('trained_model.pth.tar', map_location=device)
+trained_model = torch.load('./ML/trained_model.pth.tar', map_location=device)
 model.load_state_dict(trained_model['state_dict'])
 
 model.eval();
