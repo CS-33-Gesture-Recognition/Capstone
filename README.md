@@ -18,6 +18,10 @@ The following dependencies need to be installed through pip
 - PIL
 - torch
 - torchvision
+- split-folders
+- matplotlib
+- scipy
+- sklearn
 
 Installing through pip should be done as following:
 
@@ -77,6 +81,8 @@ This model is very intensive on CPUs, and will most likely take a while to run o
 - Use ```nvidia-smi``` to see current GPU usage.
 - Add CUDA_VISIBLE_DEVICES to environment variables ```setenv CUDA_VISIBLE_DEVICES```
 - Set GPU ```setenv CUDA_VISIBLE_DEVICES "0,1"
+
+### ensure that datasets directory (containing training images) is in the current directory you are running training script on
 
 
 Run ```python transferLearning.py``` to start training the machine learning model.
