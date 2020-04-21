@@ -1,8 +1,10 @@
 src/__pycache__/*
 
-src/*.dylib
+src/code/SW/__pycache__/*
 
-src/*.so
+src/code/UI/*.dylib
+
+src/code/UI/*.so
 
 .DS_store
 
