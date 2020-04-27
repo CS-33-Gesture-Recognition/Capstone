@@ -7,16 +7,17 @@ from torch.optim import lr_scheduler
 import numpy as np
 import torchvision
 from torchvision import datasets, models, transforms
-import matplotlib.pyplot as plt
 import time
 import os
+from os import listdir
+import sys
 import copy
 import shutil
 import split_folders
 
 #deleting old output train/test/val directory if exists
-if os.path.isdir('output_split'):
-    shutil.rmtree('output_split');
+if os.path.isdir('../output_split'):
+    shutil.rmtree('../output_split');
 
 
 # Split with a ratio.
@@ -44,14 +45,12 @@ data_transforms = {
 data_dir = '../output_split'
 
 #load in the training and validation data into dataloaders and perform transofmrations
-data_dir = 'output_split'
 image_datasets = {x: datasets.ImageFolder(os.path.join(data_dir, x),
                                           data_transforms[x])
                   for x in ['train', 'val']}
 dataloaders = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=4,
                                              shuffle=True, num_workers=4)
               for x in ['train', 'val']}
-
 # get the size of each dataset
 dataset_sizes = {x: len(image_datasets[x]) for x in ['train', 'val']}
 
