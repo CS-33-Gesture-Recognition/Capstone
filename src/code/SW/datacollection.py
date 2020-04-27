@@ -35,6 +35,26 @@ def outputData(depth_colormap, gesture):
     print(image_path);
     depth_colormap_image.save(image_path);
 
+def removeBackground(image):
+    minVal = 10000;
+
+    for x in image:
+        for y in x:
+            if y < minVal and y != 0:
+                minVal = y;
+
+    newImage = [];
+    for x in image:
+        newRow = [];
+        for y in x:
+            if y > 1500 + minVal:
+                newRow.append(0);
+            else:
+                newRow.append(y);
+        newImage.append(newRow);
+
+    return np.asanyarray(newImage);
+
 # function that gathers camera image data, displays it, and asks for classification
 def gatherCameraImage(gesture, iterations):
     # Create a pipeline
@@ -48,6 +68,10 @@ def gatherCameraImage(gesture, iterations):
     # Start streaming
     profile = pipeline.start(config)
 
+    # Store images to process later so capturing is fast
+    storedImages = {};
+
+    print("collecting images");
     for iteration in range(iterations):
 
         # Getting the depth sensor's depth scale (see rs-align example for explanation)
@@ -79,6 +103,9 @@ def gatherCameraImage(gesture, iterations):
         depth_image = np.asanyarray(aligned_depth_frame.get_data())
         # color_image = np.asanyarray(color_frame.get_data())
 
+        #Storing images so we can process later
+        key = str(len(storedImages));
+        storedImages[key] = depth_image;
         # Remove background - Set pixels further than clipping_distance to grey
         grey_color = 153
         depth_image_3d = np.dstack((depth_image,depth_image,depth_image)) #depth image is 1 channel, color is 3 channels
@@ -90,9 +117,29 @@ def gatherCameraImage(gesture, iterations):
         cv2.imshow('Align Example', images)
         key = cv2.waitKey(1)
 
-        outputData(depth_colormap,  gesture);
-
     pipeline.stop()
+
+    processedImages = [];
+
+    print("processing images");
+    #Processing each stored image
+    for image in storedImages:
+        processedImages.append(removeBackground(storedImages[image]));
+
+    print("adding images to dataset");
+    # Adding each processed image to dataset
+    for depth_image in processedImages:
+        grey_color = 153
+        depth_image_3d = np.dstack((depth_image,depth_image,depth_image)) #depth image is 1 channel, color is 3 channels
+
+        # Render images
+        depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
+        images = np.hstack((depth_colormap, depth_colormap))
+        cv2.namedWindow('Align Example', cv2.WINDOW_AUTOSIZE)
+        cv2.imshow('Align Example', images)
+        key = cv2.waitKey(1)
+
+        outputData(depth_colormap,  gesture);
 
 def collectTestingX():
     # Create a pipeline
@@ -134,6 +181,8 @@ def collectTestingX():
     color_frame = aligned_frames.get_color_frame()
 
     depth_image = np.asanyarray(aligned_depth_frame.get_data())
+
+    depth_image = removeBackground(depth_image);
 
     depth = frames.get_depth_frame();
     closest = 10000;
