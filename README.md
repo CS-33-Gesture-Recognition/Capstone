@@ -62,6 +62,12 @@ The traininggui.py is good for capturing a single image and adding to training s
 
 ## Training Model
 
+### Running locally
+
+- To run locally, simply navigate to the src/code directory, and run the python script: transferLearning.py
+
+- This will create a new /src/code/ML/trained_model.pth.tar if correctly executed
+
 This model is very intensive on CPUs, and will most likely take a while to run on a CPU without a good GPU. Therefore, it is recommended to run this program on the pelican server. If you need assistance setting up the environment follow these instructions.
 
 ### Log in to GPU server from flip
