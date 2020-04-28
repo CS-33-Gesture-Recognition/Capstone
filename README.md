@@ -53,6 +53,8 @@ The librealsense library will need to manaully installed due to the Mac OS uncoo
 
 ![alt text](https://i.imgur.com/cqNR27z.png)
 
+- Place all of these files into the src/code/UI/ directory
+
 ## Training Program
 
 Run ```python UI/trainingUI.py``` or ```python UI/dev_ui.py``` while inside the code folder to start training program.
