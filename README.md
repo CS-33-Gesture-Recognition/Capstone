@@ -1,5 +1,5 @@
 # Capstone
-This project will focus in developing a system that will be able to recognize gestures and produce translations into text. The system will use an Intel RealSense depth camera that uses coded light technology, machine learning algorithms for classification, a database and a graphical interface. 
+This project will focuses in the development of a system capable of recognizing American Sign Language alphabet gestures and produce translations into text. The system will use an Intel RealSense depth camera that uses coded light technology, machine learning algorithms for classification, a database and a graphical interface. 
 
 ## Python
 
@@ -98,5 +98,5 @@ Run ```python ML/transferLearning.py``` to start training the machine learning m
 ## Testing/End User Program
 
 Run ```python UI/endUserUi.py``` to start the testing program.
-Click the capture button in order to collect a testing image and display it in the GUI.
+Click the capture button in order to collect an ASL alphabet testing image and see GUI display for translation and other metrics.
 
