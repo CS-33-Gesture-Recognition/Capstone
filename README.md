@@ -92,7 +92,7 @@ This model is very intensive on CPUs, and will most likely take a while to run o
 
 ### ensure that datasets directory (containing training images) is in the current directory you are running training script on
 
-
+- Ensure that the datasets/ directory containing training images matches directory of repo
 Run ```python ML/transferLearning.py``` to start training the machine learning model.
 
 ## Testing/End User Program
