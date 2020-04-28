@@ -73,6 +73,11 @@ def gatherCameraImage(gesture, iterations):
 
     print("collecting images");
     for iteration in range(iterations):
+        print("collected image : " + iteration);
+
+        if (iteration % 10 == 0):
+            pipeline.stop();
+            profile = pipeline.start(config)
 
         # Getting the depth sensor's depth scale (see rs-align example for explanation)
         depth_sensor = profile.get_device().first_depth_sensor()
@@ -117,18 +122,12 @@ def gatherCameraImage(gesture, iterations):
         cv2.imshow('Align Example', images)
         key = cv2.waitKey(1)
 
-    pipeline.stop()
-
     processedImages = [];
 
     print("processing images");
     #Processing each stored image
     for image in storedImages:
-        processedImages.append(removeBackground(storedImages[image]));
-
-    print("adding images to dataset");
-    # Adding each processed image to dataset
-    for depth_image in processedImages:
+        depth_image = removeBackground(storedImages[image]);
         grey_color = 153
         depth_image_3d = np.dstack((depth_image,depth_image,depth_image)) #depth image is 1 channel, color is 3 channels
 
