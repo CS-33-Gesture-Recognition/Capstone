@@ -59,6 +59,7 @@ class Ui_MainWindow1(object):
         output = self.model(ml_input);
 
         prediction = int(torch.max(output.data, 1)[1])
+        predictionLabel = self.predictionMap[str(prediction)];
 
         sm = nn.Softmax(dim=1);
         probability = sm(output)[0][prediction].item();
@@ -74,7 +75,7 @@ class Ui_MainWindow1(object):
         self.image02.setPixmap(pixmap02)
         print('images updated');
         
-        return prediction;
+        return predictionLabel;
 
     def capture_button_clicked(self):
         prediction = self.process_image()
@@ -83,7 +84,7 @@ class Ui_MainWindow1(object):
         pixmap02 = QPixmap(image_02).scaled( image_width, image_height, Qt.KeepAspectRatio)
         self.image01.setPixmap(pixmap01)
         self.image02.setPixmap(pixmap02)
-        self.output_text.setText(str(chr(prediction+97)))
+        self.output_text.setText(prediction)
 
     def setup(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -151,7 +152,7 @@ class Ui_MainWindow1(object):
         #################################################################
         self.pushButton.clicked.connect(self.capture_button_clicked)
         #################################################################
-
+        self.predictionMap = dc.getMapLabels();
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
