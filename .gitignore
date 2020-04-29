@@ -2,6 +2,10 @@ src/__pycache__/*
 
 src/code/SW/__pycache__/*
 
+src/code/ML/*.dylib
+
+src/code/ML/*.so
+
 src/code/UI/*.dylib
 
 src/code/UI/*.so
