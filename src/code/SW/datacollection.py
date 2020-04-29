@@ -18,9 +18,40 @@ import cv2
 import os
 # import image lib to save images
 from PIL import Image
+# importhing threading to speed up processing
+import threading
+
+# Using 16 threads max
+threadLimiter = threading.BoundedSemaphore(16);
+
+class dcThread(threading.Thread):
+    def __init__(self, image, index, gesture):
+        threading.Thread.__init__(self);
+        self.image = image;
+        self.index = index;
+        self.gesture = gesture;
+
+    def run(self):
+        threadLimiter.acquire();
+        try:
+            processImage(self.image, self.index, self.gesture);
+        finally:
+            threadLimiter.release();
+
 
 # function that outputs training data from camera to dataset.
-def outputData(depth_colormap, gesture):
+def outputData(depth_colormap, idx, gesture):
+    strPath = '../datasets/' + gesture + '/';
+
+    if (not os.path.exists(strPath)):
+        os.mkdir(strPath);
+
+    depth_colormap_image = Image.fromarray(depth_colormap);
+    image_path = strPath + str(idx) + '.jpg';
+    print(image_path);
+    depth_colormap_image.save(image_path);
+
+def startIndex(gesture):
     strPath = '../datasets/' + gesture + '/';
 
     if (not os.path.exists(strPath)):
@@ -30,30 +61,30 @@ def outputData(depth_colormap, gesture):
 
     idx = len(files);
 
-    depth_colormap_image = Image.fromarray(depth_colormap);
-    image_path = strPath + str(idx) + '.jpg';
-    print(image_path);
-    depth_colormap_image.save(image_path);
+    return idx;
 
 def removeBackground(image):
     minVal = 10000;
 
-    for x in image:
-        for y in x:
-            if y < minVal and y != 0:
-                minVal = y;
+    flat = np.ravel(image);
 
-    newImage = [];
-    for x in image:
-        newRow = [];
-        for y in x:
-            if y > 1500 + minVal:
-                newRow.append(0);
-            else:
-                newRow.append(y);
-        newImage.append(newRow);
+    for x in flat:
+        if x < minVal:
+            minVal = x;
 
-    return np.asanyarray(newImage);
+    flatProcessed = [0 if x > 1500 + minVal else x for x in flat];
+    
+    return np.reshape(flatProcessed, (480, 640));
+
+def processImage(image, index, gesture):
+    depth_image = removeBackground(image);
+    grey_color = 153
+    depth_image_3d = np.dstack((depth_image,depth_image,depth_image)) #depth image is 1 channel, color is 3 channels
+
+    # Render image into colormap
+    depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
+
+    outputData(depth_colormap, index, gesture);
 
 # function that gathers camera image data, displays it, and asks for classification
 def gatherCameraImage(gesture, iterations):
@@ -122,23 +153,17 @@ def gatherCameraImage(gesture, iterations):
         cv2.imshow('Align Example', images)
         key = cv2.waitKey(1)
 
+    pipeline.stop();
     processedImages = [];
 
     print("processing images");
     #Processing each stored image
-    for image in storedImages:
-        depth_image = removeBackground(storedImages[image]);
-        grey_color = 153
-        depth_image_3d = np.dstack((depth_image,depth_image,depth_image)) #depth image is 1 channel, color is 3 channels
-
-        # Render images
-        depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
-        images = np.hstack((depth_colormap, depth_colormap))
-        cv2.namedWindow('Align Example', cv2.WINDOW_AUTOSIZE)
-        cv2.imshow('Align Example', images)
-        key = cv2.waitKey(1)
-
-        outputData(depth_colormap,  gesture);
+    startIdx = startIndex(gesture);
+    
+    for i in range(0, iterations):
+        print("processing image : " + str(i));
+        thread = dcThread(storedImages[str(i)], startIdx + i, gesture);
+        thread.start();
 
 def collectTestingX():
     # Create a pipeline
