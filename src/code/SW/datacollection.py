@@ -234,3 +234,15 @@ def outputDataToFileStructure(depth_image, color_image):
 def getNumberLabels():
     dirs = os.listdir('../datasets/');
     return len(dirs);
+
+def getMapLabels():
+    dirs = os.listdir('../datasets/');
+    
+    map = {};
+    i = 0;
+
+    for dirName in dirs:
+        map[str(i)] = dirName;
+        i+=1;
+
+    return map;
