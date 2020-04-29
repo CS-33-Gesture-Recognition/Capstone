@@ -69,10 +69,10 @@ def removeBackground(image):
     flat = np.ravel(image);
 
     for x in flat:
-        if x < minVal:
+        if x != 0 and x < minVal:
             minVal = x;
 
-    flatProcessed = [0 if x > 1500 + minVal else x for x in flat];
+    flatProcessed = [0 if x > (1500 + minVal) else x for x in flat];
     
     return np.reshape(flatProcessed, (480, 640));
 
