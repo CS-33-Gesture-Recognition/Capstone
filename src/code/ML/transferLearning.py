@@ -130,7 +130,6 @@ if __name__ == '__main__':
     class_names = image_datasets['train'].classes
     #print("class_names: ", class_names);
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    print("using device: " + device);
     #print('num classes: ', len(class_names));
     #opatin the resnet18 model for transfer learning
     model_ft = models.resnet18(pretrained=True)
