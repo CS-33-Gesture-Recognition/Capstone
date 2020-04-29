@@ -73,7 +73,7 @@ def gatherCameraImage(gesture, iterations):
 
     print("collecting images");
     for iteration in range(iterations):
-        print("collected image : " + iteration);
+        print("collected image : " + str(iteration));
 
         if (iteration % 10 == 0):
             pipeline.stop();
