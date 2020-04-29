@@ -15,3 +15,7 @@ src/code/UI/*.so
 src/.DS_store
 
 src/*.jpg
+
+src/output_split/*
+
+src/output_split
