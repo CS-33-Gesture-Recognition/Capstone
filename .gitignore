@@ -19,3 +19,6 @@ src/*.jpg
 src/output_split/*
 
 src/output_split
+
+src/code/UI/__pycache__
+
