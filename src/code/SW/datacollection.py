@@ -22,7 +22,7 @@ from PIL import Image
 import threading
 
 # Using 16 threads max
-threadLimiter = threading.BoundedSemaphore(16);
+threadLimiter = threading.BoundedSemaphore(4);
 
 class dcThread(threading.Thread):
     def __init__(self, image, index, gesture):
@@ -64,17 +64,11 @@ def startIndex(gesture):
     return idx;
 
 def removeBackground(image):
-    minVal = 10000;
+    minVal = np.min(image[np.nonzero(image)]);
 
-    flat = np.ravel(image);
+    image[image > 1500 + minVal] = 0;
 
-    for x in flat:
-        if x != 0 and x < minVal:
-            minVal = x;
-
-    flatProcessed = [0 if x > (1500 + minVal) else x for x in flat];
-    
-    return np.reshape(flatProcessed, (480, 640));
+    return image;
 
 def processImage(image, index, gesture):
     depth_image = removeBackground(image);
@@ -106,7 +100,7 @@ def gatherCameraImage(gesture, iterations):
     for iteration in range(iterations):
         print("collected image : " + str(iteration));
 
-        if (iteration != 0 and iteration % 10 == 0):
+        if (iteration != 0 and iteration % 15 == 0):
             pipeline.stop();
             profile = pipeline.start(config)
 
@@ -159,7 +153,7 @@ def gatherCameraImage(gesture, iterations):
     print("processing images");
     #Processing each stored image
     startIdx = startIndex(gesture);
-    
+
     for i in range(0, iterations):
         print("processing image : " + str(i));
         thread = dcThread(storedImages[str(i)], startIdx + i, gesture);
@@ -238,5 +232,18 @@ def outputDataToFileStructure(depth_image, color_image):
     img.save("./UI/depth_image.jpg")
 
 def getNumberLabels():
-    dirs = os.listdir('../datasets/');
-    return len(dirs);
+    return len([name for name in os.listdir('../datasets/') if os.path.isdir('../datasets/'+name)]);
+
+
+def getMapLabels():
+    dirs = [name for name in os.listdir('../datasets/') if os.path.isdir('../datasets/'+name)]
+    dirs.sort()
+
+    map = {};
+    i = 0;
+
+    for dirName in dirs:
+        map[str(i)] = dirName;
+        i+=1;
+
+    return map;

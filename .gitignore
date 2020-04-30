@@ -2,6 +2,10 @@ src/__pycache__/*
 
 src/code/SW/__pycache__/*
 
+src/code/ML/*.dylib
+
+src/code/ML/*.so
+
 src/code/UI/*.dylib
 
 src/code/UI/*.so
@@ -11,3 +15,10 @@ src/code/UI/*.so
 src/.DS_store
 
 src/*.jpg
+
+src/output_split/*
+
+src/output_split
+
+src/code/UI/__pycache__
+
