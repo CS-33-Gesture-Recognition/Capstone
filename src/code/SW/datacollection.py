@@ -232,12 +232,13 @@ def outputDataToFileStructure(depth_image, color_image):
     img.save("./UI/depth_image.jpg")
 
 def getNumberLabels():
-    dirs = os.listdir('../datasets/');
-    return len(dirs);
+    return len([name for name in os.listdir('../datasets/') if os.path.isdir('../datasets/'+name)]);
+
 
 def getMapLabels():
-    dirs = os.listdir('../datasets/');
-    
+    dirs = [name for name in os.listdir('../datasets/') if os.path.isdir('../datasets/'+name)]
+    dirs.sort()
+
     map = {};
     i = 0;
 
