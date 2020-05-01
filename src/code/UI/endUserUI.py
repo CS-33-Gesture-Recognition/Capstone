@@ -104,7 +104,7 @@ class Ui_MainWindow1(object):
         self.output_text = QtWidgets.QLabel(self.centralwidget)
         self.output_text.setGeometry(QtCore.QRect(685, 15, 200, 60))
         font = QtGui.QFont()
-        font.setPointSize(55)
+        font.setPointSize(25)
         self.output_text.setFont(font)
         self.output_text.setText("")
         self.output_text.setAlignment(QtCore.Qt.AlignCenter)
