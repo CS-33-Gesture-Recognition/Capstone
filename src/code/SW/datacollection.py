@@ -100,7 +100,7 @@ def gatherCameraImage(gesture, iterations):
     for iteration in range(iterations):
         print("collected image : " + str(iteration));
 
-        if (iteration != 0 and iteration % 15 == 0):
+        if (iteration != 0 and iteration % 10 == 0):
             pipeline.stop();
             profile = pipeline.start(config)
 
