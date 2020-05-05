@@ -85,13 +85,13 @@ class Ui_MainWindow1(object):
 
         sm = nn.Softmax(dim=1)
         probability1 = sm(output)[0][prediction1].item()
-        probability1 = float("{0:.5f}".format(probability1*100))
+        probability1 = float("{0:.4f}".format(probability1*100))
 
         probability2 = sm(output)[0][prediction2].item()
-        probability2 = float("{0:.5f}".format(probability2*100))
+        probability2 = float("{0:.4f}".format(probability2*100))
 
         probability3 = sm(output)[0][prediction3].item()
-        probability3 = float("{0:.5f}".format(probability3*100))
+        probability3 = float("{0:.4f}".format(probability3*100))
 
         print("1:" + str(probability1) + " 2:" +
               str(probability2) + " 3:" + str(probability3))
@@ -172,15 +172,15 @@ class Ui_MainWindow1(object):
         self.output_text = QtWidgets.QLabel(self.centralwidget)
         self.output_text.setGeometry(QtCore.QRect(685, 15, 200, 60))
         font = QtGui.QFont()
-        font.setPointSize(25)
+        font.setPointSize(20)
         self.output_text.setFont(font)
         self.output_text.setText("")
         self.output_text.setAlignment(QtCore.Qt.AlignCenter)
         self.output_text.setObjectName("output_text")
         self.ML_output_text = QtWidgets.QLabel(self.centralwidget)
-        self.ML_output_text.setGeometry(QtCore.QRect(685, 90, 200, 60))
+        self.ML_output_text.setGeometry(QtCore.QRect(685, 90, 200, 100))
         font = QtGui.QFont()
-        font.setPointSize(10)
+        font.setPointSize(8)
         self.ML_output_text.setFont(font)
         self.ML_output_text.setText("")
         self.ML_output_text.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
