@@ -57,15 +57,53 @@ class Ui_MainWindow1(object):
         ml_input = preformatted.unsqueeze(0).to(self.device);
 
         output = self.model(ml_input);
+        tensorArray = []
+        for i in range (23):
+            # print(tensorArray)
+            tensorArray.append(int(output[0][i]))
 
-        prediction = int(torch.max(output.data, 1)[1])
-        predictionLabel = self.predictionMap[str(prediction)];
+        print(tensorArray)
 
-        sm = nn.Softmax(dim=1);
-        probability = sm(output)[0][prediction].item();
-        print(probability);
-        probability = float("{0:.2f}".format(probability));
-        self.ML_output_text.setText("Accuracy of Classification: " + str(probability) + '\n' + 'Distance from Camera: ' + str(closest) + ' m');
+        one = -1
+        two = -1
+        three = -1
+        for i in range(23):
+            if(tensorArray[i] > one):
+                one = tensorArray[i]
+            if(tensorArray[i] > two and tensorArray[i] < one):
+                two = tensorArray[i]
+            if(tensorArray[i] > three and tensorArray[i] < two and tensorArray[i] < one):
+                three = tensorArray[i]
+            
+        print("1:" + str(one) + " 2:" + str(two) + " 3:" + str(three))        
+
+        prediction1 = tensorArray.index(one)
+        prediction2 = tensorArray.index(two)
+        prediction3 = tensorArray.index(three)
+
+        predictionLabel = self.predictionMap[str(prediction1)]
+
+        sm = nn.Softmax(dim=1)
+        probability1 = sm(output)[0][prediction1].item()
+        probability1 = float("{0:.5f}".format(probability1*100))
+
+        probability2 = sm(output)[0][prediction2].item()
+        probability2 = float("{0:.5f}".format(probability2*100))
+
+        probability3 = sm(output)[0][prediction3].item()
+        probability3 = float("{0:.5f}".format(probability3*100))
+
+        print("1:" + str(probability1) + " 2:" +
+              str(probability2) + " 3:" + str(probability3))
+
+
+        self.ML_output_text.setText("Accuracy of Classification: " + str(probability1) +
+                                    '%\n' + 'Distance from Camera: ' +
+                                    str(closest) + ' m' + '\n\n' +
+                                    "Second Guess: " + self.predictionMap[str(prediction2)] + ', Probability: ' +
+                                    str(probability2) + "%\n" +
+                                    "Third Guess: " + self.predictionMap[str(prediction3)] + ', Probability: ' +
+                                    str(probability3) + "%\n")
 
         print("done")
         print('updating images')
@@ -73,9 +111,39 @@ class Ui_MainWindow1(object):
         pixmap02 = QPixmap(image_02).scaled( image_width, image_height, Qt.KeepAspectRatio)
         self.image01.setPixmap(pixmap01)
         self.image02.setPixmap(pixmap02)
-        print('images updated');
+        print('images updated')
         
-        return predictionLabel;
+        return predictionLabel
+
+    # def topThree(self, tensorArray):
+
+    #     np.sort(tensorArray)
+    #     prediction1 = tensorArray[0]
+    #     prediction2 = tensorArray[1]
+    #     prediction3 = tensorArray[2]
+
+    #     predictionLabel = self.predictionMap[str(prediction1)]
+
+    #     sm = nn.Softmax(dim=1)
+    #     probability1 = sm(output)[0][prediction1].item()
+    #     probability1 = float("{0:.2f}".format(probability1))
+
+    #     probability2 = sm(output)[0][prediction2].item()
+    #     probability2 = float("{0:.2f}".format(probability2))
+
+    #     probability3 = sm(output)[0][prediction3].item()
+    #     probability3 = float("{0:.2f}".format(probability3))
+
+    #     self.ML_output_text.setText("Accuracy of Classification: " + str(probability1)
+    #                                 + '\n' + 'Distance from Camera: ' +
+    #                                 str(closest) + ' m' + '\n'
+    #                                 "Second Classification: " + str(prediction2) +
+    #                                 "Accuracy of Second Classification: " + str(probability2) + "/n"
+    #                                 "Third Classification: " + str(prediction3) +
+    #                                 "Accuracy of Third Classification: " +
+    #                                 str(probability3) + "/n")
+
+    #     return predictionLabel
 
     def capture_button_clicked(self):
         prediction = self.process_image()
