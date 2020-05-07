@@ -23,6 +23,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QThread
 from PIL import Image
 
 sys.path.append(os.path.realpath('.'));
@@ -33,13 +34,31 @@ image_01 = "./UI/rgb_image.jpg"
 image_02 = "./UI/depth_image.jpg"
 image_width = 320
 image_height = 240
-capture_button_text = "Capture"
+start_capture_button_text = "Start Capture"
+stop_capture_button_text = "Stop Capture"
 info_button_text = "Notice"
 instruction_text = "This is the user interface. Click ‘capture’ to start shooting. Make sure the user ’s hand is within the range of the camera when shooting. The results will be displayed in the upper right corner."
 window_title_text = "CS-33 Gesture Recognition"
 
 
 class Ui_MainWindow1(object):
+
+    # Worker thread to run capturing in the background.
+    class WorkerThread(QThread):
+        def __init__(self, parent):
+            QThread.__init__(self)
+            self.parent = parent;
+
+        def run(self):
+            while(True):
+                if (self.parent.pushButton.text() == stop_capture_button_text):
+                    print("Capturing");
+                    self.parent.capture_loop();
+                    time.sleep(5);
+                else:
+                    print("Not Capturing");
+                    time.sleep(.5);
+
 
     def process_image(self):
         print("capturing data")
@@ -50,6 +69,7 @@ class Ui_MainWindow1(object):
                 transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
                 ])
         test_data = dc.collectTestingX();
+        # test_data = np.load('testData.txt.npy', allow_pickle=True)
         closest = float("{0:.2f}".format(test_data[1]));
         test_data = test_data[0];
         depth_colormap_image = Image.fromarray(test_data);
@@ -59,7 +79,6 @@ class Ui_MainWindow1(object):
         output = self.model(ml_input);
         tensorArray = []
         for i in range (23):
-            # print(tensorArray)
             tensorArray.append(int(output[0][i]))
 
         print(tensorArray)
@@ -115,44 +134,23 @@ class Ui_MainWindow1(object):
         
         return predictionLabel
 
-    # def topThree(self, tensorArray):
-
-    #     np.sort(tensorArray)
-    #     prediction1 = tensorArray[0]
-    #     prediction2 = tensorArray[1]
-    #     prediction3 = tensorArray[2]
-
-    #     predictionLabel = self.predictionMap[str(prediction1)]
-
-    #     sm = nn.Softmax(dim=1)
-    #     probability1 = sm(output)[0][prediction1].item()
-    #     probability1 = float("{0:.2f}".format(probability1))
-
-    #     probability2 = sm(output)[0][prediction2].item()
-    #     probability2 = float("{0:.2f}".format(probability2))
-
-    #     probability3 = sm(output)[0][prediction3].item()
-    #     probability3 = float("{0:.2f}".format(probability3))
-
-    #     self.ML_output_text.setText("Accuracy of Classification: " + str(probability1)
-    #                                 + '\n' + 'Distance from Camera: ' +
-    #                                 str(closest) + ' m' + '\n'
-    #                                 "Second Classification: " + str(prediction2) +
-    #                                 "Accuracy of Second Classification: " + str(probability2) + "/n"
-    #                                 "Third Classification: " + str(prediction3) +
-    #                                 "Accuracy of Third Classification: " +
-    #                                 str(probability3) + "/n")
-
-    #     return predictionLabel
-
     def capture_button_clicked(self):
-        prediction = self.process_image()
+        print(self.pushButton.text())
+        if self.pushButton.text() == start_capture_button_text:
+            self.pushButton.setText(stop_capture_button_text)
+        else:
+            self.pushButton.setText(start_capture_button_text)
+        print(self.pushButton.isChecked())
 
+    def capture_loop(self):
+        print("in capture loop");
+        prediction = self.process_image()
         pixmap01 = QPixmap(image_01).scaled( image_width, image_height, Qt.KeepAspectRatio)
         pixmap02 = QPixmap(image_02).scaled( image_width, image_height, Qt.KeepAspectRatio)
         self.image01.setPixmap(pixmap01)
         self.image02.setPixmap(pixmap02)
         self.output_text.setText(prediction)
+
 
     def setup(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -219,15 +217,22 @@ class Ui_MainWindow1(object):
 
         #################################################################
         self.pushButton.clicked.connect(self.capture_button_clicked)
+        self.pushButton.setCheckable(True)
+        self.pushButton.toggle()
         #################################################################
-        self.predictionMap = dc.getMapLabels();
+        self.predictionMap = dc.getMapLabels()
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+        self.importModel();
+
+        self.workerThread = self.WorkerThread(self);
+        self.workerThread.start();
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", window_title_text))
-        self.pushButton.setText(_translate("MainWindow", capture_button_text))
+        self.pushButton.setText(_translate("MainWindow", start_capture_button_text))
         self.Notice.setText(_translate("MainWindow", info_button_text))
 
     def show_popup(self):
@@ -265,11 +270,9 @@ def main():
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow1()
-    ui.setup( MainWindow)
-    ui.importModel();
+    ui.setup(MainWindow)
     MainWindow.show()
     sys.exit(app.exec_())
-
 
 if __name__ == "__main__":
     main()
