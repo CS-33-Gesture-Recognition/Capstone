@@ -68,8 +68,8 @@ class Ui_MainWindow1(object):
                 transforms.ToTensor(),
                 transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
                 ])
-        test_data = dc.collectTestingX();
-        # test_data = np.load('testData.txt.npy', allow_pickle=True)
+        #test_data = dc.collectTestingX();
+        test_data = np.load('testData.txt.npy', allow_pickle=True)
         closest = float("{0:.2f}".format(test_data[1]));
         test_data = test_data[0];
         depth_colormap_image = Image.fromarray(test_data);
@@ -117,12 +117,14 @@ class Ui_MainWindow1(object):
 
 
         self.ML_output_text.setText("Accuracy of Classification: " + str(probability1) +
-                                    '%\n' + 'Distance from Camera: ' +
+                                    '%\n' + 'Distance from Camera:       ' +
                                     str(closest) + ' m' + '\n\n' +
                                     "Second Guess: " + self.predictionMap[str(prediction2)] + ', Probability: ' +
                                     str(probability2) + "%\n" +
-                                    "Third Guess: " + self.predictionMap[str(prediction3)] + ', Probability: ' +
+                                    "Third Guess:     " + self.predictionMap[str(prediction3)] + ', Probability: ' +
                                     str(probability3) + "%\n")
+
+        self.string.setText("" + str(self.string.text()) + self.predictionMap[str(prediction1)] + " ")
 
         print("done")
         print('updating images')
@@ -178,11 +180,22 @@ class Ui_MainWindow1(object):
         self.ML_output_text = QtWidgets.QLabel(self.centralwidget)
         self.ML_output_text.setGeometry(QtCore.QRect(685, 90, 200, 100))
         font = QtGui.QFont()
-        font.setPointSize(8)
+        font.setPointSize(10)
         self.ML_output_text.setFont(font)
         self.ML_output_text.setText("")
         self.ML_output_text.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
         self.ML_output_text.setObjectName("ML_output_text")
+
+        self.string = QtWidgets.QLabel(self.centralwidget)
+        self.string.setGeometry(QtCore.QRect(15, 270, 655, 25))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.string.setFont(font)
+        self.string.setText("")
+        self.string.setAlignment(
+            QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
+        self.string.setObjectName("string")
+        
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton.setGeometry(QtCore.QRect(690, 250, 171, 51))
         self.pushButton.setStyleSheet("background-color:red;\n"
