@@ -37,7 +37,9 @@ image_height = 240
 start_capture_button_text = "Start Capture"
 stop_capture_button_text = "Stop Capture"
 info_button_text = "Notice"
-instruction_text = "This is the user interface. Click ‘capture’ to start shooting. Make sure the user ’s hand is within the range of the camera when shooting. The results will be displayed in the upper right corner."
+words_formed = "Words formed"
+clear_char = "Clear Characters"
+instruction_text = "This is the user interface. Click ‘start capture’ to start shooting. A shoot will be taken every 5 seconds until 'stop capture' is clicked. Make sure the user ’s hand is within the range of the camera when shooting. The results will be displayed in the upper right corner. The characters will be saved and displayed below the images and can be cleared by clicking 'clear characters'"
 window_title_text = "CS-33 Gesture Recognition"
 
 
@@ -116,12 +118,12 @@ class Ui_MainWindow1(object):
               str(probability2) + " 3:" + str(probability3))
 
 
-        self.ML_output_text.setText("Accuracy of Classification: " + str(probability1) +
-                                    '%\n' + 'Distance from Camera:       ' +
+        self.ML_output_text.setText("Probability:\t" + str(probability1) +
+                                    '%\n' + 'Distance:\t' +
                                     str(closest) + ' m' + '\n\n' +
-                                    "Second Guess: " + self.predictionMap[str(prediction2)] + ', Probability: ' +
+                                    "Second Guess:\t" + self.predictionMap[str(prediction2)] + '\nProbability:\t' +
                                     str(probability2) + "%\n" +
-                                    "Third Guess:     " + self.predictionMap[str(prediction3)] + ', Probability: ' +
+                                    "Third Guess:\t" + self.predictionMap[str(prediction3)] + '\nProbability:\t' +
                                     str(probability3) + "%\n")
 
         self.string.setText("" + str(self.string.text()) + self.predictionMap[str(prediction1)] + " ")
@@ -153,6 +155,8 @@ class Ui_MainWindow1(object):
         self.image02.setPixmap(pixmap02)
         self.output_text.setText(prediction)
 
+    def clear_concat_text(self):
+        self.string.setText("")
 
     def setup(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -169,6 +173,7 @@ class Ui_MainWindow1(object):
         self.image02.setGeometry(QtCore.QRect(350, 15, image_width, image_height))
         self.image02.setText("")
         self.image02.setObjectName("image02")
+
         self.output_text = QtWidgets.QLabel(self.centralwidget)
         self.output_text.setGeometry(QtCore.QRect(685, 15, 200, 60))
         font = QtGui.QFont()
@@ -177,8 +182,9 @@ class Ui_MainWindow1(object):
         self.output_text.setText("")
         self.output_text.setAlignment(QtCore.Qt.AlignCenter)
         self.output_text.setObjectName("output_text")
+
         self.ML_output_text = QtWidgets.QLabel(self.centralwidget)
-        self.ML_output_text.setGeometry(QtCore.QRect(685, 90, 200, 100))
+        self.ML_output_text.setGeometry(QtCore.QRect(685, 90, 200, 120))
         font = QtGui.QFont()
         font.setPointSize(10)
         self.ML_output_text.setFont(font)
@@ -186,8 +192,18 @@ class Ui_MainWindow1(object):
         self.ML_output_text.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
         self.ML_output_text.setObjectName("ML_output_text")
 
+        self.wordsFormed = QtWidgets.QLabel(self.centralwidget)
+        self.wordsFormed.setGeometry(QtCore.QRect(15, 270, 80, 18))
+        font = QtGui.QFont()
+        font.setPointSize(12)
+        self.wordsFormed.setFont(font)
+        self.wordsFormed.setText(words_formed)
+        self.wordsFormed.setAlignment(
+            QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
+        self.wordsFormed.setObjectName("string")
+
         self.string = QtWidgets.QLabel(self.centralwidget)
-        self.string.setGeometry(QtCore.QRect(15, 270, 655, 25))
+        self.string.setGeometry(QtCore.QRect(15, 300, 525, 25))
         font = QtGui.QFont()
         font.setPointSize(12)
         self.string.setFont(font)
@@ -207,6 +223,21 @@ class Ui_MainWindow1(object):
 "padding:10px;\n"
 "min-width:10px;")
         self.pushButton.setObjectName("pushButton")
+
+        
+        self.stringButton = QtWidgets.QPushButton(self.centralwidget)
+        self.stringButton.setGeometry(QtCore.QRect(550, 295, 120, 35))
+        self.stringButton.setStyleSheet("background-color:red;\n"
+"border-style:outset;\n"
+"border-width:2px;\n"
+"border-radius:10px;\n"
+"border-color:black;\n"
+"font:bold 10px;\n"
+"padding:6px;\n"
+"min-width:10px;")
+        self.stringButton.setObjectName("stringButton")
+        self.stringButton.setText(clear_char)
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 900, 21))
@@ -233,6 +264,9 @@ class Ui_MainWindow1(object):
         self.pushButton.setCheckable(True)
         self.pushButton.toggle()
         #################################################################
+
+        self.stringButton.clicked.connect(self.clear_concat_text)
+
         self.predictionMap = dc.getMapLabels()
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)

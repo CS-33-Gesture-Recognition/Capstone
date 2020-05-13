@@ -40,8 +40,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
             for inputs, labels in dataloaders[phase]:
                 inputs = inputs.to(device)
                 labels = labels.to(device)
-                #print("inputs: ",inputs);
-                #print("labels: ",labels);
+    
                 # zero the parameter gradients
                 optimizer.zero_grad()
 
@@ -85,7 +84,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
     model.load_state_dict(best_model_wts)
     return model
 
-if __name__ == '__main__': 
+if __name__ == '__main__':
 
     #deleting old output train/test/val directory if exists
     if os.path.isdir('../output_split'):
@@ -128,10 +127,10 @@ if __name__ == '__main__':
 
     #set device (CPU or GPU) and obtain class names
     class_names = image_datasets['train'].classes
-    #print("class_names: ", class_names);
+
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    #print('num classes: ', len(class_names));
-    #opatin the resnet18 model for transfer learning
+
+    #obtains the resnet18 model for transfer learning
     model_ft = models.resnet18(pretrained=True)
     num_ftrs = model_ft.fc.in_features
 
