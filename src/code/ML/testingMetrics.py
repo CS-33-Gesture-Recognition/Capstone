@@ -1,19 +1,12 @@
 from __future__ import print_function, division
 
-import torch
-import torch.nn as nn
-import torch.optim as optim
+from torch import nn, optim
 from torch.optim import lr_scheduler
 import numpy as np
-import torchvision
 from torchvision import datasets, models, transforms
 import matplotlib.pyplot as plt
-import time
-import os
-import copy
-import shutil
-import split_folders
 from sklearn.metrics import confusion_matrix
+import time, os, copy, shutil, split_folders, torch, torchvision
 
 def main():
     #  normalization for testing

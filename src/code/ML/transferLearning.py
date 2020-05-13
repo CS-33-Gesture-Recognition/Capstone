@@ -1,20 +1,13 @@
 from __future__ import print_function, division
 
-import torch
+from torch import nn, optim
 import torch.nn as nn
 import torch.optim as optim
 from torch.optim import lr_scheduler
 import numpy as np
-import torchvision
 from torchvision import datasets, models, transforms
-import time
-import os
+import time, os, sys, copy, shutil, split_folders, torch, torchvision.datasets.cityscapes
 from os import listdir
-import sys
-import copy
-import shutil
-import split_folders
-
 # method to train the transfer learning model
 def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
     since = time.time()

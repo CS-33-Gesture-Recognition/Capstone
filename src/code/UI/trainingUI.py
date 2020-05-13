@@ -1,8 +1,8 @@
 #PyQt imports
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLineEdit 
 
-import sys
-import os
+import sys, os
+
 # Import datacollection methods
 sys.path.append(os.path.realpath('.'));
 import SW.datacollection as dc;

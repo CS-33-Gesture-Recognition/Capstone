@@ -3,15 +3,10 @@
 from __future__ import print_function, division
 
 import torch.nn as nn
-import torchvision
-from torchvision import datasets, models, transforms
-import time
-import os
-import sys
-import copy
-import numpy as np;
-import torch
 from torch.utils import data
+from torchvision import datasets, models, transforms
+import time, os, sys, copy, torch, torchvision
+import numpy as np;
 from PIL import Image
 
 #set path to project
