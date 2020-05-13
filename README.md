@@ -10,22 +10,8 @@ Download python 3.7 from this release page https://www.python.org/downloads/wind
 
 #### Dependency list
 
-The following dependencies need to be installed through pip
-- opencv-python
-- pyrealsense2
-- numpy
-- PyQt5
-- PIL
-- torch
-- torchvision
-- split-folders
-- matplotlib
-- scipy
-- sklearn
-
-Installing through pip should be done as following:
-
-`{python version} -m pip install {package} --user`
+The following dependencies need to be installed through pip by doing the following.
+`pip install -r requirements.txt`
 
 ### Mac
 
