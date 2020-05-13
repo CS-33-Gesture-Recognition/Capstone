@@ -70,8 +70,8 @@ class Ui_MainWindow1(object):
                 transforms.ToTensor(),
                 transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
                 ])
-        #test_data = dc.collectTestingX();
-        test_data = np.load('testData.txt.npy', allow_pickle=True)
+        test_data = dc.collectTestingX();
+        #test_data = np.load('testData.txt.npy', allow_pickle=True)
         closest = float("{0:.2f}".format(test_data[1]));
         test_data = test_data[0];
         depth_colormap_image = Image.fromarray(test_data);
