@@ -54,11 +54,9 @@ class Ui_MainWindow1(object):
         def run(self):
             while(True):
                 if (self.parent.pushButton.text() == stop_capture_button_text):
-                    print("Capturing");
                     self.parent.capture_loop();
                     time.sleep(5);
                 else:
-                    print("Not Capturing");
                     time.sleep(.5);
 
 
@@ -83,8 +81,6 @@ class Ui_MainWindow1(object):
         for i in range (23):
             tensorArray.append(int(output[0][i]))
 
-        print(tensorArray)
-
         one = -1
         two = -1
         three = -1
@@ -94,9 +90,7 @@ class Ui_MainWindow1(object):
             if(tensorArray[i] > two and tensorArray[i] < one):
                 two = tensorArray[i]
             if(tensorArray[i] > three and tensorArray[i] < two and tensorArray[i] < one):
-                three = tensorArray[i]
-            
-        print("1:" + str(one) + " 2:" + str(two) + " 3:" + str(three))        
+                three = tensorArray[i]    
 
         prediction1 = tensorArray.index(one)
         prediction2 = tensorArray.index(two)
@@ -114,10 +108,6 @@ class Ui_MainWindow1(object):
         probability3 = sm(output)[0][prediction3].item()
         probability3 = float("{0:.4f}".format(probability3*100))
 
-        print("1:" + str(probability1) + " 2:" +
-              str(probability2) + " 3:" + str(probability3))
-
-
         self.ML_output_text.setText("Probability:\t" + str(probability1) +
                                     '%\n' + 'Distance:\t' +
                                     str(closest) + ' m' + '\n\n' +
@@ -128,7 +118,6 @@ class Ui_MainWindow1(object):
 
         self.string.setText("" + str(self.string.text()) + self.predictionMap[str(prediction1)] + " ")
 
-        print("done")
         print('updating images')
         pixmap01 = QPixmap(image_01).scaled( image_width, image_height, Qt.KeepAspectRatio)
         pixmap02 = QPixmap(image_02).scaled( image_width, image_height, Qt.KeepAspectRatio)
@@ -139,15 +128,12 @@ class Ui_MainWindow1(object):
         return predictionLabel
 
     def capture_button_clicked(self):
-        print(self.pushButton.text())
         if self.pushButton.text() == start_capture_button_text:
             self.pushButton.setText(stop_capture_button_text)
         else:
             self.pushButton.setText(start_capture_button_text)
-        print(self.pushButton.isChecked())
 
     def capture_loop(self):
-        print("in capture loop");
         prediction = self.process_image()
         pixmap01 = QPixmap(image_01).scaled( image_width, image_height, Qt.KeepAspectRatio)
         pixmap02 = QPixmap(image_02).scaled( image_width, image_height, Qt.KeepAspectRatio)
@@ -193,7 +179,7 @@ class Ui_MainWindow1(object):
         self.ML_output_text.setObjectName("ML_output_text")
 
         self.wordsFormed = QtWidgets.QLabel(self.centralwidget)
-        self.wordsFormed.setGeometry(QtCore.QRect(15, 270, 80, 18))
+        self.wordsFormed.setGeometry(QtCore.QRect(15, 270, 100, 18))
         font = QtGui.QFont()
         font.setPointSize(12)
         self.wordsFormed.setFont(font)
@@ -290,13 +276,12 @@ class Ui_MainWindow1(object):
         x = msg.exec_()
 
     def importModel(self):
-        print('begin loading');
+        print('begin loading model');
         path = '../datasets';
         num_labels = dc.getNumberLabels();
-        # num_labels = sum(os.path.isdir(os.path.join(path, i)) for i in os.listdir(path));
 
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu");
-        print(self.device);
+        print('device' + str(self.device));
 
         self.model = models.resnet18(pretrained=True)
         num_ftrs = self.model.fc.in_features
@@ -309,7 +294,7 @@ class Ui_MainWindow1(object):
         self.model.load_state_dict(trained_model['state_dict'])
 
         self.model.eval();
-        print('done loading')
+        print('done loading model')
 
 
 def main():
