@@ -5,8 +5,8 @@
 ##              Align Depth to Color               ##
 #####################################################
 
-# This code has been modified to capture one still frame of information and save it to a file
-#This will also briefly show the depth_image and
+# This code has been modified to capture frames and pre-process them before
+# passing them to the machine learning model for classification/training.
 
 # First import the library, if you need this run "pip install pyrealsense2"
 import pyrealsense2 as rs
