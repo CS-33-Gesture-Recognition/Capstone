@@ -22,3 +22,7 @@ src/output_split
 
 src/code/UI/__pycache__
 
+src/code/UI/depth_image.jpg
+
+src/code/UI/rgb_image.jpg
+
