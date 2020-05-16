@@ -1,3 +1,6 @@
+#file to test performance metrics of ML model on testing set
+#computes a confusion matrix
+
 from __future__ import print_function, division
 
 from torch import nn, optim

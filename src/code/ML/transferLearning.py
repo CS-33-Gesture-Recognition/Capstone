@@ -1,3 +1,5 @@
+# file to train and output model weights for CNN ML model
+
 from __future__ import print_function, division
 
 from torch import nn, optim
@@ -33,7 +35,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
             for inputs, labels in dataloaders[phase]:
                 inputs = inputs.to(device)
                 labels = labels.to(device)
-    
+
                 # zero the parameter gradients
                 optimizer.zero_grad()
 
