@@ -1,5 +1,5 @@
 # Capstone
-This project will focuses in the development of a system capable of recognizing American Sign Language alphabet gestures and produce translations into text. The system will use an Intel RealSense depth camera that uses coded light technology, machine learning algorithms for classification, a database and a graphical interface. 
+This project will focuses in the development of a system capable of recognizing American Sign Language alphabet gestures and produce translations into text. The system will use an Intel RealSense depth camera that uses coded light technology, machine learning algorithms for classification, a database and a graphical interface.
 
 ## Python
 
@@ -15,9 +15,9 @@ The following dependencies need to be installed through pip by doing the followi
 
 ### Mac
 
-The librealsense library will need to manaully installed due to the Mac OS uncooperative nature with pip. Parts of the instructions originate from https://github.com/IntelRealSense/librealsense/blob/master/doc/installation_osx.md 
+The librealsense library will need to manaully installed due to the Mac OS uncooperative nature with pip. Parts of the instructions originate from https://github.com/IntelRealSense/librealsense/blob/master/doc/installation_osx.md
 
-- The librealsense library should be in a seperate folder outside this repo. 
+- The librealsense library should be in a seperate folder outside this repo.
 
 1. Install CommantLineTools `sudo xcode-select --install` or download XCode 6.0+ via the AppStore
 2. Install the Homebrew package manager via terminal - [link](http://brew.sh/)
@@ -35,11 +35,11 @@ The librealsense library will need to manaully installed due to the Mac OS uncoo
 5. Build the Project
   * `make -j2` and this will be slowest step
 
-- There will be a few symbolic links that will need to be copied from the librealsense library over to this repo in order for it compile. Below is an image of the files needed. 
+- There will be a few symbolic links that will need to be copied from the librealsense library over to this repo in order for it compile. Below is an image of the files needed.
 
 ![alt text](https://i.imgur.com/cqNR27z.png)
 
-- Place all of these files into the src/code/UI/ directory
+- Place all of these files into the src/code/UI/ and src/code/ML/ directories
 
 ## Training Program
 
@@ -85,4 +85,3 @@ Run ```python ML/transferLearning.py``` to start training the machine learning m
 
 Run ```python UI/endUserUi.py``` to start the testing program.
 Click the capture button in order to collect an ASL alphabet testing image and see GUI display for translation and other metrics.
-
