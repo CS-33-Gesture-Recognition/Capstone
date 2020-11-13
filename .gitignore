@@ -27,3 +27,5 @@ src/output_split
 src/code/UI/__pycache__
 
 src/code/UI/*.jpg
+
+.vscode
