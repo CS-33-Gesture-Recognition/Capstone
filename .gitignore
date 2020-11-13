@@ -10,10 +10,6 @@ src/code/UI/*.dylib
 
 src/code/UI/*.so
 
-src/code/UTIL/*.dylib
-
-src/code/UTIL/*.so
-
 src/code/PP/*.dylib
 
 src/code/PP/*.so

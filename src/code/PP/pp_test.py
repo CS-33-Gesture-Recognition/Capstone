@@ -1,9 +1,4 @@
-import sys
-import os
-import numpy as np
-# set path to project so we can import our UTILS
-sys.path.append(os.path.realpath('.'))
-import UTIL.RSC_Wrapper as RSCW
+import RSC_Wrapper as RSCW
 
 
 if __name__ == "__main__":
