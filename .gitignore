@@ -10,9 +10,9 @@ src/code/UI/*.dylib
 
 src/code/UI/*.so
 
-src/code/TESTING_UI/*.dylib
+src/code/PP/*.dylib
 
-src/code/TESTING_UI/*.so
+src/code/PP/*.so
 
 .DS_store
 
