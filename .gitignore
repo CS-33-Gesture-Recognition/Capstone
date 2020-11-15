@@ -10,6 +10,10 @@ src/code/UI/*.dylib
 
 src/code/UI/*.so
 
+src/code/PP/*.dylib
+
+src/code/PP/*.so
+
 .DS_store
 
 src/.DS_store
@@ -23,3 +27,5 @@ src/output_split
 src/code/UI/__pycache__
 
 src/code/UI/*.jpg
+
+.vscode
